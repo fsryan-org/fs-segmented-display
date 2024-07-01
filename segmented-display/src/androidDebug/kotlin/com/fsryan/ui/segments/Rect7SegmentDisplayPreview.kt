@@ -24,7 +24,6 @@ fun Rectangular7Segments0() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -46,7 +45,6 @@ fun Rectangular7Segments1() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -68,7 +66,6 @@ fun Rectangular7Segments2() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -90,7 +87,6 @@ fun Rectangular7Segments3() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -112,7 +108,6 @@ fun Rectangular7Segments4() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -134,7 +129,6 @@ fun Rectangular7Segments5() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -156,7 +150,6 @@ fun Rectangular7Segments6() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -178,7 +171,6 @@ fun Rectangular7Segments7() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -200,7 +192,6 @@ fun Rectangular7Segments8() {
             gapSize = 10F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 1.2F,
             activatedColor = Color.Black
         )
@@ -222,7 +213,6 @@ fun Rectangular7Segments9() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -244,7 +234,6 @@ fun Rectangular7SegmentsA() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -266,7 +255,6 @@ fun Rectangular7SegmentsB() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -288,7 +276,6 @@ fun Rectangular7SegmentsC() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -310,7 +297,6 @@ fun Rectangular7SegmentsD() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -332,7 +318,6 @@ fun Rectangular7SegmentsE() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )
@@ -354,7 +339,6 @@ fun Rectangular7SegmentsF() {
             gapSize = 5F,
             topLeftPadding = Offset(x = 10F, y = 10F),
             bottomRightPadding = Offset(x = 10F, y = 10F),
-            topBottomHeightRatio = 105F / 107,
             thicknessMultiplier = 0.5F,
             activatedColor = Color.Black
         )

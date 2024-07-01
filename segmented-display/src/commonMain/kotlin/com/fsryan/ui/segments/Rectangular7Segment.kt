@@ -17,49 +17,23 @@ fun Rect7SegmentDisplay(
     gapSize: Float = 5F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
-    charToActivatedSegments: (Char) -> Int = { char ->
-        when (char) {
-            '0' -> 0b01110111
-            '1' -> 0b00100100
-            '2' -> 0b01011101
-            '3' -> 0b01101101
-            '4' -> 0b00101110
-            '5' -> 0b01101011
-            '6' -> 0b01111011
-            '7' -> 0b00100101
-            '8' -> 0b01111111
-            '9' -> 0b01101111
-            'A', 'a' -> 0b00111111
-            'B', 'b' -> 0b01111010
-            'C', 'c' -> 0b01010011
-            'D', 'd' -> 0b01111100
-            'E', 'e' -> 0b01011011
-            'F', 'f' -> 0b00011011
-            else -> 0   // <-- cannot render
-        }
-    }
+    charToActivatedSegments: (Char) -> Int = ::translateHexToActiveSegments
 ) {
     val topLeftPadding = Offset(x = 10F, y = 10F)
     val bottomRightPadding = Offset(x = 10F, y = 10F)
-    Canvas(
-        modifier = modifier.fillMaxSize()
-    ) {
-        val height = size.height
-        val charWidth = size.width / text.length
-        text.forEachIndexed { idx, char ->
-            drawRect7SegmentChar(
-                activatedSegments = charToActivatedSegments(char),
-                origin = Offset(x = idx * charWidth, y = 0F),
-                width = charWidth,
-                height = height,
-                gapSize = gapSize,
-                topLeftPadding = topLeftPadding,
-                bottomRightPadding = bottomRightPadding,
-                thicknessMultiplier = thicknessMultiplier,
-                activatedColor = activatedColor,
-                deactivatedColor = deactivatedColor
-            )
-        }
+    SingleLineSegmentedDisplay(modifier = modifier, text = text) { char, origin, charWidth, charHeight ->
+        drawRect7SegmentChar(
+            activatedSegments = charToActivatedSegments(char),
+            origin = origin,
+            width = charWidth,
+            height = charHeight,
+            gapSize = gapSize,
+            topLeftPadding = topLeftPadding,
+            bottomRightPadding = bottomRightPadding,
+            thicknessMultiplier = thicknessMultiplier,
+            activatedColor = activatedColor,
+            deactivatedColor = deactivatedColor
+        )
     }
 }
 
@@ -70,7 +44,7 @@ fun DrawScope.drawRect7SegmentChar(
     height: Float,
     topLeftPadding: Offset,
     bottomRightPadding: Offset,
-    topBottomHeightRatio: Float = 105F / 107,
+    topAreaPercentage: Float = 105F / 212,
     thicknessMultiplier: Float = 1F,
     gapSize: Float,
     activatedColor: Color,
@@ -78,7 +52,7 @@ fun DrawScope.drawRect7SegmentChar(
 ) {
     val drawableWidth = width - topLeftPadding.x - bottomRightPadding.x
     val drawableHeight = height - topLeftPadding.y - bottomRightPadding.y
-    val topAreaHeight = drawableHeight * topBottomHeightRatio / 2
+    val topAreaHeight = drawableHeight * topAreaPercentage
     val bottomAreaHeight = drawableHeight - topAreaHeight
     val halfGapSize = gapSize / 2
     
@@ -200,7 +174,7 @@ fun DrawScope.drawRect7SegmentChar(
     drawPath(
         path = Path().apply {
             val leftX = topLeftX + configuredThickness + halfGapSize
-            val topY = bottomRightY - configuredThickness + halfGapSize
+            val topY = bottomRightY - actualThickness
             val rightX = leftX + configuredHorizontalSegmentWidth - gapSize
             val bottomY = bottomRightY
             moveTo(leftX, topY)
