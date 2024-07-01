@@ -7,64 +7,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 
-/**
- * Describes how the typical rectangle is adjusted into a hexagon on one end.
- * There should be 14 of these per character
- */
-interface Hexagonal7SegmentParams {
-    /**
-     * The percent of the length of a typical rectangular segment that should
-     * be used for the _OUTER_ length of the hexagonal segment. The outer
-     * length is closer to the outside of the character. When the segment is
-     * the middle horizontal segment, it is the
-     */
-    val outerLengthPct: Float
-
-    /**
-     * The percent of the length of a typical rectangular segment that should
-     * be used for the _INNER_ length of the hexagonal segment. The inner
-     * length is closer to the inside of the character.
-     */
-    val innerLengthPct: Float
-
-    /**
-     * The percent of the extended area, oriented such that the vertical
-     * direction is relative to the thickness of the segment and the horizontal
-     * direction is perpendicular to the thickness of the segment, this
-     * controls how far toward the vertical that the hexagon extends.
-     */
-    val extThicknessVertPct: Float
-
-    /**
-     * The percent of the extended area, oriented such that the horizontal
-     * direction is perpendicular to the thickness of the segment and the
-     * vertical direction is relative to the thickness of the segment, this
-     * controls how far toward the horizontal that the hexagon extends.
-     */
-    val extThicknessHorizPct: Float
-
-    companion object {
-        val EVEN = Hexagonal7SegmentParams(
-            outerLengthPct = 1F,
-            innerLengthPct = 1F,
-            extThicknessYPct = 0.5F,
-            extThicknessXPct = 0.5F
-        )
-    }
-}
-
-fun Hexagonal7SegmentParams(
-    outerLengthPct: Float,
-    innerLengthPct: Float,
-    extThicknessYPct: Float,
-    extThicknessXPct: Float
-): Hexagonal7SegmentParams = Hexagonal7SegmentParamsData(
-    outerLengthPct = outerLengthPct,
-    innerLengthPct = innerLengthPct,
-    extThicknessVertPct = extThicknessYPct,
-    extThicknessHorizPct = extThicknessXPct
-)
-
 @Composable
 fun Hexagonal7SegmentDisplay(
     modifier: Modifier = Modifier,
@@ -73,8 +15,8 @@ fun Hexagonal7SegmentDisplay(
     gapSize: Float = 5F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
-    hexagonal7SegmentParams: (index: Int, leftTop: Boolean) -> Hexagonal7SegmentParams = { _, _ ->
-        Hexagonal7SegmentParams.EVEN
+    hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
+        HexagonalSegmentParams.EVEN
     },
     charToActivatedSegments: (Char) -> Int = ::translateHexToActiveSegments
 ) {
@@ -92,7 +34,7 @@ fun Hexagonal7SegmentDisplay(
             thicknessMultiplier = thicknessMultiplier,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
-            hexagonal7SegmentParams = hexagonal7SegmentParams
+            hexagonalSegmentParams = hexagonalSegmentParams
         )
     }
 }
@@ -109,8 +51,8 @@ fun DrawScope.drawHex7SegmentChar(
     gapSize: Float,
     activatedColor: Color,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
-    hexagonal7SegmentParams: (index: Int, leftTop: Boolean) -> Hexagonal7SegmentParams = { _, _ ->
-        Hexagonal7SegmentParams.EVEN
+    hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
+        HexagonalSegmentParams.EVEN
     }
 ) {
     // Important sizes
@@ -160,8 +102,8 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw top horizontal segment
     drawPath(
         path = Path().apply {
-            val leftParams = hexagonal7SegmentParams(0, true)
-            val rightParams = hexagonal7SegmentParams(0, false)
+            val leftParams = hexagonalSegmentParams(0, true)
+            val rightParams = hexagonalSegmentParams(0, false)
 
             val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
             val leftTopY = topY
@@ -190,8 +132,8 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw top-left vertical segment
     drawPath(
         path = Path().apply {
-            val topParams = hexagonal7SegmentParams(1, true)
-            val bottomParams = hexagonal7SegmentParams(1, false)
+            val topParams = hexagonalSegmentParams(1, true)
+            val bottomParams = hexagonalSegmentParams(1, false)
 
             val leftTopX = leftmostX
             val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
@@ -220,21 +162,23 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw top-right vertical segment
     drawPath(
         path = Path().apply {
-            val topParams = hexagonal7SegmentParams(2, true)
-            val bottomParams = hexagonal7SegmentParams(2, false)
+            val topParams = hexagonalSegmentParams(2, true)
+            val bottomParams = hexagonalSegmentParams(2, false)
 
             val leftTopX = rightmostX - actualThickness
-            val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
+            val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.innerLengthPct
+
             val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
             val topMiddleY = topAreaRectTop - actualThickness * topParams.extThicknessHorizPct
+
             val rightTopX = leftTopX + actualThickness
-            val rightTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.innerLengthPct
+            val rightTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
             val rightBottomX = rightTopX
-            val rightBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
+            val rightBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
             val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
             val bottomMiddleY = topAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
             val leftBottomX = leftTopX
-            val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
+            val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
 
             moveTo(bottomMiddleX, bottomMiddleY)
             lineTo(leftBottomX, leftBottomY)
@@ -250,8 +194,8 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw middle horizontal segment
     drawPath(
         path = Path().apply {
-            val leftParams = hexagonal7SegmentParams(3, true)
-            val rightParams = hexagonal7SegmentParams(3, false)
+            val leftParams = hexagonalSegmentParams(3, true)
+            val rightParams = hexagonalSegmentParams(3, false)
 
             val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
             val leftTopY = topY + topAreaHeight - actualThickness / 2
@@ -280,8 +224,8 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw bottom-left vertical segment
     drawPath(
         path = Path().apply {
-            val topParams = hexagonal7SegmentParams(4, true)
-            val bottomParams = hexagonal7SegmentParams(4, false)
+            val topParams = hexagonalSegmentParams(4, true)
+            val bottomParams = hexagonalSegmentParams(4, false)
 
             val leftTopX = leftmostX
             val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
@@ -310,21 +254,21 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw bottom-right vertical segment
     drawPath(
         path = Path().apply {
-            val topParams = hexagonal7SegmentParams(5, true)
-            val bottomParams = hexagonal7SegmentParams(5, false)
+            val topParams = hexagonalSegmentParams(5, true)
+            val bottomParams = hexagonalSegmentParams(5, false)
 
             val leftTopX = rightmostX - actualThickness
-            val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
+            val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.innerLengthPct
             val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
             val topMiddleY = bottomAreaRectTop - actualThickness * topParams.extThicknessHorizPct
             val rightTopX = leftTopX + actualThickness
-            val rightTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.innerLengthPct
+            val rightTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
             val rightBottomX = rightTopX
-            val rightBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
+            val rightBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
             val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
             val bottomMiddleY = bottomAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
             val leftBottomX = leftTopX
-            val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
+            val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
 
             moveTo(bottomMiddleX, bottomMiddleY)
             lineTo(leftBottomX, leftBottomY)
@@ -340,20 +284,20 @@ fun DrawScope.drawHex7SegmentChar(
     // Draw bottom horizontal segment
     drawPath(
         path = Path().apply {
-            val leftParams = hexagonal7SegmentParams(6, true)
-            val rightParams = hexagonal7SegmentParams(6, false)
+            val leftParams = hexagonalSegmentParams(6, true)
+            val rightParams = hexagonalSegmentParams(6, false)
 
-            val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
+            val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
             val leftTopY = bottomY - actualThickness
             val leftMiddleX = rectLeftX - actualThickness * leftParams.extThicknessHorizPct
             val leftMiddleY = leftTopY + actualThickness * leftParams.extThicknessVertPct
-            val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
+            val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
             val leftBottomY = leftTopY + actualThickness
-            val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
+            val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
             val rightTopY = leftTopY
             val rightMiddleX = rectRightX + actualThickness * rightParams.extThicknessHorizPct
             val rightMiddleY = rightTopY + actualThickness * rightParams.extThicknessVertPct
-            val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
+            val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
             val rightBottomY = leftBottomY
 
             moveTo(leftMiddleX, leftMiddleY)
@@ -392,10 +336,3 @@ fun DrawScope.drawHex7SegmentChar(
 //        end = Offset(x = leftmostX + drawableWidth, y = bottomAreaSegmentCenterY),
 //    )
 }
-
-private data class Hexagonal7SegmentParamsData(
-    override val outerLengthPct: Float,
-    override val innerLengthPct: Float,
-    override val extThicknessVertPct: Float,
-    override val extThicknessHorizPct: Float
-): Hexagonal7SegmentParams
