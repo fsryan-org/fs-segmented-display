@@ -1,13 +1,11 @@
 import fsryan.shouldConfigureAndroid
 import fsryan.shouldConfigureIOS
-import fsryan.shouldConfigureJs
 import fsryan.shouldConfigureJvm
+import fsryan.shouldConfigureWASM
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.Companion.getOrCreate
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     id("maven-publish")
@@ -21,9 +19,15 @@ plugins {
 
 kotlin {
     @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "fs-segmented-display"
-        browser {
+    if (shouldConfigureWASM()) {
+        wasmJs {
+            moduleName = "fs-segmented-display"
+            browser {
+                testTask {
+                    useKarma {
+                        useChromeHeadless()
+                    }
+                }
 //            commonWebpackConfig {
 //                outputFileName = "fs-segmented-display.js"
 //                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
@@ -33,8 +37,9 @@ kotlin {
 //                    }
 //                }
 //            }
+            }
+            binaries.library()
         }
-        binaries.library()
     }
 
     if (shouldConfigureAndroid()) {
@@ -52,16 +57,6 @@ kotlin {
         jvmToolchain(17)
     }
 
-//    listOf(
-//        iosX64(),
-//        iosArm64(),
-//        iosSimulatorArm64()
-//    ).forEach { iosTarget ->
-//        iosTarget.binaries.framework {
-//            baseName = "ComposeApp"
-//            isStatic = true
-//        }
-//    }
     if (shouldConfigureIOS()) {
         iosArm64()
         iosSimulatorArm64()

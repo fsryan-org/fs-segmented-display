@@ -48,6 +48,10 @@ fun Project.shouldConfigureJs(): Boolean = isJsEnabled()
  * Returns whether to configure the Linux target
  */
 fun Project.shouldConfigureLinux(): Boolean = canBuildLinux() && isLinuxEnabled()
+/**
+ * Returns whether to configure the WASM target
+ */
+fun Project.shouldConfigureWASM(): Boolean = isWASMEnabled()
 
 /**
  * Returns whether the host OS is Mac OS X, and thus, can build iOS version
@@ -94,6 +98,10 @@ fun Project.isWindowsEnabled(): Boolean = isTargetEnabled("windows")
  * Returns whether the Linux target is enabled
  */
 fun Project.isLinuxEnabled(): Boolean = isTargetEnabled("linux")
+/**
+ * Returns whether the WASM target is enabled
+ */
+fun Project.isWASMEnabled(): Boolean = isTargetEnabled("wasm")
 
 /**
  * Returns whether not the target is enabled via gradle property

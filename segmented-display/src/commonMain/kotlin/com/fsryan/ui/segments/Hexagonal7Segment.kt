@@ -167,15 +167,13 @@ fun DrawScope.drawHex7SegmentChar(
 
             val leftTopX = rightmostX - actualThickness
             val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.innerLengthPct
-
-            val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
+            val topMiddleX = leftTopX + actualThickness * (1 - topParams.extThicknessVertPct)
             val topMiddleY = topAreaRectTop - actualThickness * topParams.extThicknessHorizPct
-
             val rightTopX = leftTopX + actualThickness
             val rightTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
             val rightBottomX = rightTopX
             val rightBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
+            val bottomMiddleX = leftTopX + actualThickness * (1 - bottomParams.extThicknessVertPct)
             val bottomMiddleY = topAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
             val leftBottomX = leftTopX
             val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
@@ -259,13 +257,13 @@ fun DrawScope.drawHex7SegmentChar(
 
             val leftTopX = rightmostX - actualThickness
             val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.innerLengthPct
-            val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
+            val topMiddleX = leftTopX + actualThickness * (1 - topParams.extThicknessVertPct)
             val topMiddleY = bottomAreaRectTop - actualThickness * topParams.extThicknessHorizPct
             val rightTopX = leftTopX + actualThickness
             val rightTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
             val rightBottomX = rightTopX
             val rightBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
+            val bottomMiddleX = leftTopX + actualThickness * (1 - bottomParams.extThicknessVertPct)
             val bottomMiddleY = bottomAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
             val leftBottomX = leftTopX
             val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
@@ -290,13 +288,13 @@ fun DrawScope.drawHex7SegmentChar(
             val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
             val leftTopY = bottomY - actualThickness
             val leftMiddleX = rectLeftX - actualThickness * leftParams.extThicknessHorizPct
-            val leftMiddleY = leftTopY + actualThickness * leftParams.extThicknessVertPct
+            val leftMiddleY = leftTopY + actualThickness * (1 - leftParams.extThicknessVertPct)
             val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
             val leftBottomY = leftTopY + actualThickness
             val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
             val rightTopY = leftTopY
             val rightMiddleX = rectRightX + actualThickness * rightParams.extThicknessHorizPct
-            val rightMiddleY = rightTopY + actualThickness * rightParams.extThicknessVertPct
+            val rightMiddleY = rightTopY + actualThickness * (1 - rightParams.extThicknessVertPct)
             val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
             val rightBottomY = leftBottomY
 

@@ -63,6 +63,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(project(":segmented-display"))
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -71,7 +73,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.fsryan.ui"
+    namespace = "com.fsryan.tools"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -113,7 +115,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.fsryan.ui"
+            packageName = "com.fsryan.tools"
             packageVersion = "1.0.0"
         }
     }

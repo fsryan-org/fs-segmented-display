@@ -12,36 +12,66 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-@Preview(showBackground = true, widthDp = 1675, heightDp = 179)
+@Preview(showBackground = true, widthDp = 1256, heightDp = 536)
 fun EvenHexagonal7SegmentsAllHex() {
-    Hexagonal7SegmentDisplay(
-        modifier = Modifier.background(Color.LightGray),
-        text = "0123456789ABCDEF",
-        gapSize = 3F,
-        activatedColor = Color.Black
-    )
-}
-
-@Composable
-@Preview(showBackground = true, widthDp = 837, heightDp = 358)
-fun ClassicSymmetric7SegmentsAllHex() {
     Column {
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
                 modifier = Modifier.background(Color.LightGray),
-                text = "01234567",
+                text = "0123456789AB",
                 gapSize = 3F,
-                activatedColor = Color.Black,
-                hexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+                activatedColor = Color.Black
             )
         }
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
                 modifier = Modifier.background(Color.LightGray),
-                text = "89ABCDEF",
+                text = "CDEFGHIJKLMN",
+                gapSize = 3F,
+                activatedColor = Color.Black
+            )
+        }
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "OPQRSTUVWXYZ",
+                gapSize = 3F,
+                activatedColor = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 1256, heightDp = 536)
+fun ClassicSymmetricHexagonal7SegmentsAllHex() {
+    val createHexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+    Column {
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "0123456789AB",
                 gapSize = 3F,
                 activatedColor = Color.Black,
-                hexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+                hexagonalSegmentParams = createHexagonalSegmentParams
+            )
+        }
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "CDEFGHIJKLMN",
+                gapSize = 3F,
+                activatedColor = Color.Black,
+                hexagonalSegmentParams = createHexagonalSegmentParams
+            )
+        }
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "OPQRSTUVWXYZ",
+                gapSize = 3F,
+                activatedColor = Color.Black,
+                hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
     }
