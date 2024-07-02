@@ -45,7 +45,7 @@ fun EvenHexagonal7SegmentsAllHex() {
 @Composable
 @Preview(showBackground = true, widthDp = 1256, heightDp = 536)
 fun ClassicSymmetricHexagonal7SegmentsAllHex() {
-    val createHexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+    val createHexagonalSegmentParams = HexagonalSegmentParams.classic7SymmetricParamsFun()
     Column {
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
@@ -78,6 +78,44 @@ fun ClassicSymmetricHexagonal7SegmentsAllHex() {
 }
 
 @Composable
+@Preview(showBackground = true, widthDp = 1256, heightDp = 536)
+fun ClassicAsymmetricHexagonal7SegmentsAllHex() {
+    val createHexagonalSegmentParams = HexagonalSegmentParams.classic7AsymmetricParamsFun()
+    Column {
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "0123456789AB",
+                gapSize = 10F,              // This gap size works well with the thickness below
+                thicknessMultiplier = 1.3F, // This thickness is pretty good
+                activatedColor = Color.Black,
+                hexagonalSegmentParams = createHexagonalSegmentParams
+            )
+        }
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "CDEFGHIJKLMN",
+                gapSize = 10F,
+                thicknessMultiplier = 1.5F, // Thisi s probably too thick
+                activatedColor = Color.Black,
+                hexagonalSegmentParams = createHexagonalSegmentParams
+            )
+        }
+        Box(modifier = Modifier.height(179.dp)) {
+            Hexagonal7SegmentDisplay(
+                modifier = Modifier.background(Color.LightGray),
+                text = "OPQRSTUVWXYZ",
+                gapSize = 10F,
+                thicknessMultiplier = 0.5F, // This thickness does not look good
+                activatedColor = Color.Black,
+                hexagonalSegmentParams = createHexagonalSegmentParams
+            )
+        }
+    }
+}
+
+@Composable
 @Preview(showBackground = true, widthDp = 1675, heightDp = 358)
 fun ClassicSymmetric7SegmentsAllHexTall() {
     Hexagonal7SegmentDisplay(
@@ -85,7 +123,7 @@ fun ClassicSymmetric7SegmentsAllHexTall() {
         text = "0123456789ABCDEF",
         gapSize = 3F,
         activatedColor = Color.Black,
-        hexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+        hexagonalSegmentParams = HexagonalSegmentParams.classic7SymmetricParamsFun()
     )
 }
 
@@ -97,6 +135,6 @@ fun ClassicSymmetric7SegmentsAllHexShort() {
         text = "0123456789ABCDEF",
         gapSize = 3F,
         activatedColor = Color.Black,
-        hexagonalSegmentParams = createSymmetricHexagonal7SegmentParamsFun()
+        hexagonalSegmentParams = HexagonalSegmentParams.classic7SymmetricParamsFun()
     )
 }

@@ -58,6 +58,59 @@ fun HexagonalSegmentParams(
     extThicknessHorizPct = extThicknessHorizPct
 )
 
+fun HexagonalSegmentParams.Companion.classic7SymmetricParamsFun(
+    outerLengthPct: Float = 1.375F,
+    innerLengthPct: Float = 1F,
+    extThicknessVertPct: Float = 0.25F,
+    extThicknessHorizPct: Float = 0.75F
+): (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams {
+    val angled = HexagonalSegmentParams(
+        outerLengthPct = outerLengthPct,
+        innerLengthPct = innerLengthPct,
+        extThicknessVertPct = extThicknessVertPct,
+        extThicknessHorizPct = extThicknessHorizPct
+    )
+    return { idx, leftTop ->
+        when (idx) {
+            0 -> angled
+            1 -> if (leftTop) angled else EVEN
+            2 -> if (leftTop) angled else EVEN
+            4 -> if (leftTop) EVEN else angled
+            5 -> if (leftTop) EVEN else angled
+            6 -> angled
+            else -> EVEN
+        }
+    }
+}
+
+fun HexagonalSegmentParams.Companion.classic7AsymmetricParamsFun(
+    sharpAngleOuterLengthPct: Float = 1.2F,
+    sharpAngleExtThicknessVertPct: Float = 0.6F
+): (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams {
+    val sharpAngle = HexagonalSegmentParams(
+        outerLengthPct = sharpAngleOuterLengthPct,
+        innerLengthPct = 1F,
+        extThicknessVertPct = sharpAngleExtThicknessVertPct,
+        extThicknessHorizPct = 1F
+    )
+    val pentagonalTip = HexagonalSegmentParams(
+        outerLengthPct = 1F,
+        innerLengthPct = 1F,
+        extThicknessVertPct = 0F,
+        extThicknessHorizPct = 1 - sharpAngleExtThicknessVertPct
+    )
+    return { idx, leftTop ->
+        when (idx) {
+            0, 6 -> if (leftTop) sharpAngle else pentagonalTip
+            1 -> if (leftTop) pentagonalTip else EVEN
+            2 -> if (leftTop) sharpAngle else EVEN
+            4 -> if (leftTop) EVEN else pentagonalTip
+            5 -> if (leftTop) EVEN else sharpAngle
+            else -> EVEN
+        }
+    }
+}
+
 private data class HexagonalSegmentParamsData(
     override val outerLengthPct: Float,
     override val innerLengthPct: Float,

@@ -40,28 +40,3 @@ fun translateHexToActiveSegments(char: Char): Int = when (char) {
     '-' -> 0b00001000
     else -> 0   // <-- cannot render
 }
-
-fun createSymmetricHexagonal7SegmentParamsFun(
-    outerLengthPct: Float = 1.375F,
-    innerLengthPct: Float = 1F,
-    extThicknessVertPct: Float = 0.25F,
-    extThicknessHorizPct: Float = 0.75F
-): (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams {
-    val angled = HexagonalSegmentParams(
-        outerLengthPct = outerLengthPct,
-        innerLengthPct = innerLengthPct,
-        extThicknessVertPct = extThicknessVertPct,
-        extThicknessHorizPct = extThicknessHorizPct
-    )
-    return { idx, leftTop ->
-        when (idx) {
-            0 -> angled
-            1 -> if (leftTop) angled else HexagonalSegmentParams.EVEN
-            2 -> if (leftTop) angled else HexagonalSegmentParams.EVEN
-            4 -> if (leftTop) HexagonalSegmentParams.EVEN else angled
-            5 -> if (leftTop) HexagonalSegmentParams.EVEN else angled
-            6 -> angled
-            else -> HexagonalSegmentParams.EVEN
-        }
-    }
-}
