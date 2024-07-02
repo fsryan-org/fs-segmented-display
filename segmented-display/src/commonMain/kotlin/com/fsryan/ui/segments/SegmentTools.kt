@@ -40,3 +40,20 @@ fun translateHexToActiveSegments(char: Char): Int = when (char) {
     '-' -> 0b00001000
     else -> 0   // <-- cannot render
 }
+
+fun createShearOffsetXFun(shearPct: Float): (relativeY: Float, drawableWidth: Float, drawableHeight: Float) -> Float {
+    return if (shearPct == 0F) {
+        ::noOffsetXFun
+    } else {
+        { relativeY, drawableWidth, drawableHeight ->
+            val pctHeight = relativeY / drawableHeight    // <-- the percent of the possible height
+            // a pctHeight of 0.5 should lead to an offset of 0
+            // a pctHeight of 0 should lead to an offset of shear / 2
+            // a pctHeight of 1 should lead to an offset of -shear / 2
+            val offset = drawableWidth * (1 - pctHeight - 0.5F) * shearPct
+            offset
+        }
+    }
+}
+
+internal fun noOffsetXFun(relativeY: Float, drawableWidth: Float, drawableHeight: Float): Float = 0F

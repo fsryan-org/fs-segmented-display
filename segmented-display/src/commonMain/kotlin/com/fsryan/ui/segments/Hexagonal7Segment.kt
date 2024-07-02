@@ -1,18 +1,58 @@
 package com.fsryan.ui.segments
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
+/**
+ * Display the input text via characters of seven hexagonal segments, supposing
+ * that no three of the calculated points of a segment lie on the same line
+ * (which is possible and even desirable in some cases).
+ *
+ * @param modifier The [Modifier] applied to the [Canvas] on which the
+ * 7-segment characters are drawn
+ * @param text the [String] of characters to draw via the 7-segments
+ * @param thicknessMultiplier A multiplier applied to the thickness of the
+ * segments. The thickness of each segment has a large effect on the ultimate
+ * look of the character.
+ * @param gapSize The size (in [Dp]) of the gaps between the segments of each
+ * character. This, too, plays a large role in the look of the characters.
+ * @param shearPct This acts like a multiplier of the width of a character that
+ * results in the bottom of the character being shifted to the left/right and
+ * the top of the character being shifted to the right/left when the value is
+ * positive/negative. When 0, the character will be straight and vertical.
+ * @param paddingValues The amount of "padding" applied to each character. When
+ * [shearPct] is 0, this does act like padding, and nothing will be drawn to
+ * the [Canvas] in this area around each character. However, when [shearPct] is
+ * nonzero, you have to look at it as though the "padding" is also getting
+ * sheared.
+ * @param activatedColor The [Color] of the activated segments
+ * @param deactivatedColor the [Color] of the deactivated segments. you will
+ * most likely want to make this the same as the activated color, but with some
+ * alpha applied. (defaults to alpha of `0.05F`)
+ * @param hexagonalSegmentParams a function that returns
+ * [HexagonalSegmentParams] that define how the tips of each segment are
+ * rendered
+ * @param charToActivatedSegments a function which defines the activated
+ * segments for a char passed in.
+ */
 @Composable
 fun Hexagonal7SegmentDisplay(
     modifier: Modifier = Modifier,
     text: String,
     thicknessMultiplier: Float = 1F,
-    gapSize: Float = 5F,
+    gapSize: Dp = 5.dp,
+    shearPct: Float = 0F,
+    paddingValues: PaddingValues = PaddingValues(all = 4.dp),
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
@@ -20,23 +60,78 @@ fun Hexagonal7SegmentDisplay(
     },
     charToActivatedSegments: (Char) -> Int = ::translateHexToActiveSegments
 ) {
-    val topLeftPadding = Offset(x = 10F, y = 10F)
-    val bottomRightPadding = Offset(x = 10F, y = 10F)
-    SingleLineSegmentedDisplay(modifier = modifier, text = text) { char, origin, charWidth, charHeight ->
-        drawHex7SegmentChar(
+    val density = LocalDensity.current.density
+    val layoutDirection = LocalLayoutDirection.current
+    val topLeftPadding = Offset(
+        x = paddingValues.calculateLeftPadding(layoutDirection).value * density,
+        y = paddingValues.calculateTopPadding().value * density
+    )
+    val bottomRightPadding = Offset(
+        x = paddingValues.calculateRightPadding(layoutDirection).value * density,
+        y = paddingValues.calculateBottomPadding().value * density
+    )
+    SingleLineSegmentedDisplay(modifier = modifier, text = text, shearPct = shearPct) { char, origin, charWidth, charHeight ->
+        drawHex7SegmentCharSheared(
             activatedSegments = charToActivatedSegments(char),
             origin = origin,
             width = charWidth,
             height = charHeight,
-            gapSize = gapSize,
+            gapSize = gapSize.value * density,
             topLeftPadding = topLeftPadding,
             bottomRightPadding = bottomRightPadding,
             thicknessMultiplier = thicknessMultiplier,
+            shearPct = shearPct,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
             hexagonalSegmentParams = hexagonalSegmentParams
         )
     }
+}
+
+fun DrawScope.drawHex7SegmentCharSheared(
+    activatedSegments: Int,
+    origin: Offset,
+    width: Float,
+    height: Float,
+    topLeftPadding: Offset,
+    bottomRightPadding: Offset,
+    topHeightPercentage: Float = 105F / 212,
+    thicknessMultiplier: Float = 1F,
+    gapSize: Float = 5F,
+    activatedColor: Color = Color.Black,
+    deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    shearPct: Float = 0F,
+    hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
+        HexagonalSegmentParams.EVEN
+    }
+) {
+    val offsetXFun: (relativeY: Float, drawableWidth: Float, drawableHeight: Float) -> Float = if (shearPct == 0F) {
+        { _, _, _ -> 0F }
+    } else {
+        { relativeY, drawableWidth, drawableHeight ->
+            val pctHeight = relativeY / drawableHeight    // <-- the percent of the possible height
+            // a pctHeight of 0.5 should lead to an offset of 0
+            // a pctHeight of 0 should lead to an offset of shear / 2
+            // a pctHeight of 1 should lead to an offset of -shear / 2
+            val offset = drawableWidth * (1 - pctHeight - 0.5F) * shearPct
+            offset
+        }
+    }
+    drawHex7SegmentChar(
+        activatedSegments = activatedSegments,
+        origin = origin,
+        width = width,
+        height = height,
+        topLeftPadding = topLeftPadding,
+        bottomRightPadding = bottomRightPadding,
+        topHeightPercentage = topHeightPercentage,
+        thicknessMultiplier = thicknessMultiplier,
+        gapSize = gapSize,
+        activatedColor = activatedColor,
+        deactivatedColor = deactivatedColor,
+        hexagonalSegmentParams = hexagonalSegmentParams,
+        offsetX = offsetXFun
+    )
 }
 
 fun DrawScope.drawHex7SegmentChar(
@@ -48,12 +143,13 @@ fun DrawScope.drawHex7SegmentChar(
     bottomRightPadding: Offset,
     topHeightPercentage: Float = 105F / 212,
     thicknessMultiplier: Float = 1F,
-    gapSize: Float,
-    activatedColor: Color,
+    gapSize: Float = 5F,
+    activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
         HexagonalSegmentParams.EVEN
-    }
+    },
+    offsetX: (relativeY: Float, drawableWidth: Float, drawableHeight: Float) -> Float = ::noOffsetXFun
 ) {
     // Important sizes
     val drawableWidth = width - topLeftPadding.x - bottomRightPadding.x
@@ -118,12 +214,12 @@ fun DrawScope.drawHex7SegmentChar(
             val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
             val rightBottomY = leftBottomY
 
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
+            moveTo(leftMiddleX + offsetX(leftMiddleY - topY, drawableWidth, drawableHeight), leftMiddleY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightMiddleX + offsetX(rightMiddleY - topY, drawableWidth, drawableHeight), rightMiddleY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
             close()
         },
         color = if (activatedSegments and 0b1 == 1) activatedColor else deactivatedColor
@@ -148,12 +244,12 @@ fun DrawScope.drawHex7SegmentChar(
             val leftBottomX = leftTopX
             val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
 
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
+            moveTo(bottomMiddleX + offsetX(bottomMiddleY - topY, drawableWidth, drawableHeight), bottomMiddleY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(topMiddleX + offsetX(topMiddleY - topY, drawableWidth, drawableHeight), topMiddleY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
             close()
         },
         color = if (activatedSegments and 0b10 != 0) activatedColor else deactivatedColor
@@ -178,12 +274,12 @@ fun DrawScope.drawHex7SegmentChar(
             val leftBottomX = leftTopX
             val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
 
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
+            moveTo(bottomMiddleX + offsetX(bottomMiddleY - topY, drawableWidth, drawableHeight), bottomMiddleY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(topMiddleX + offsetX(topMiddleY - topY, drawableWidth, drawableHeight), topMiddleY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
             close()
         },
         color = if (activatedSegments and 0b100 != 0) activatedColor else deactivatedColor
@@ -208,12 +304,12 @@ fun DrawScope.drawHex7SegmentChar(
             val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
             val rightBottomY = leftBottomY
 
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
+            moveTo(leftMiddleX + offsetX(leftMiddleY - topY, drawableWidth, drawableHeight), leftMiddleY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightMiddleX + offsetX(rightMiddleY - topY, drawableWidth, drawableHeight), rightMiddleY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
             close()
         },
         color = if (activatedSegments and 0b1000 != 0) activatedColor else deactivatedColor
@@ -238,12 +334,12 @@ fun DrawScope.drawHex7SegmentChar(
             val leftBottomX = leftTopX
             val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
 
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
+            moveTo(bottomMiddleX + offsetX(bottomMiddleY - topY, drawableWidth, drawableHeight), bottomMiddleY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(topMiddleX + offsetX(topMiddleY - topY, drawableWidth, drawableHeight), topMiddleY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
             close()
         },
         color = if (activatedSegments and 0b10000 != 0) activatedColor else deactivatedColor
@@ -268,12 +364,12 @@ fun DrawScope.drawHex7SegmentChar(
             val leftBottomX = leftTopX
             val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
 
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
+            moveTo(bottomMiddleX + offsetX(bottomMiddleY - topY, drawableWidth, drawableHeight), bottomMiddleY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(topMiddleX + offsetX(topMiddleY - topY, drawableWidth, drawableHeight), topMiddleY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
             close()
         },
         color = if (activatedSegments and 0b100000 != 0) activatedColor else deactivatedColor
@@ -298,12 +394,12 @@ fun DrawScope.drawHex7SegmentChar(
             val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
             val rightBottomY = leftBottomY
 
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
+            moveTo(leftMiddleX + offsetX(leftMiddleY - topY, drawableWidth, drawableHeight), leftMiddleY)
+            lineTo(leftTopX + offsetX(leftTopY - topY, drawableWidth, drawableHeight), leftTopY)
+            lineTo(rightTopX + offsetX(rightTopY - topY, drawableWidth, drawableHeight), rightTopY)
+            lineTo(rightMiddleX + offsetX(rightMiddleY - topY, drawableWidth, drawableHeight), rightMiddleY)
+            lineTo(rightBottomX + offsetX(rightBottomY - topY, drawableWidth, drawableHeight), rightBottomY)
+            lineTo(leftBottomX + offsetX(leftBottomY - topY, drawableWidth, drawableHeight), leftBottomY)
             close()
         },
         color = if (activatedSegments and 0b1000000 != 0) activatedColor else deactivatedColor

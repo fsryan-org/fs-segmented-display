@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.fsryan.ui.segments.Hexagonal7SegmentDisplay
 import com.fsryan.ui.segments.HexagonalSegmentParams
@@ -26,7 +27,7 @@ fun App() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            val charWidth = maxWidth / 8
+            val charWidth = maxWidth / 12
             val charHeight = charWidth * 2
             val hexagoanlSegementParams = HexagonalSegmentParams.classic7AsymmetricParamsFun()
             Column(
@@ -35,34 +36,37 @@ fun App() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
-                    modifier = Modifier.width(6 * charWidth)
+                    modifier = Modifier.width(12 * charWidth)
                         .height(charHeight)
                 ) {
                     Hexagonal7SegmentDisplay(
-                        text = "HELLO",
-                        gapSize = 5F,
+                        text = "0123456789AB",
+                        shearPct = 0.33F,
+                        thicknessMultiplier = 1.3F,
                         activatedColor = MaterialTheme.colors.primary,
                         hexagonalSegmentParams = hexagoanlSegementParams
                     )
                 }
                 Box(
-                    modifier = Modifier.width(5 * charWidth)
+                    modifier = Modifier.width(12 * charWidth)
                         .height(charHeight)
                 ) {
                     Hexagonal7SegmentDisplay(
-                        text = "WORLD",
-                        gapSize = 5F,
+                        text = "CDEFGHIJKLMN",
+                        shearPct = 0.33F,
+                        thicknessMultiplier = 1.3F,
                         activatedColor = MaterialTheme.colors.primary,
                         hexagonalSegmentParams = hexagoanlSegementParams
                     )
                 }
                 Box(
-                    modifier = Modifier.width(8 * charWidth)
+                    modifier = Modifier.width(12 * charWidth)
                         .height(charHeight)
                 ) {
                     Hexagonal7SegmentDisplay(
-                        text = "867-5309",
-                        gapSize = 5F,
+                        text = "OPQRSTUVWXYZ",
+                        shearPct = 0.33F,
+                        thicknessMultiplier = 1.3F,
                         activatedColor = MaterialTheme.colors.primary,
                         hexagonalSegmentParams = hexagoanlSegementParams
                     )
