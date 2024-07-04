@@ -5,9 +5,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
@@ -50,11 +55,13 @@ fun Hexagonal7SegmentDisplay(
     modifier: Modifier = Modifier,
     text: String,
     thicknessMultiplier: Float = 1F,
+    topHeightPercentage: Float = 105F / 212,
     gapSize: Dp = 5.dp,
     shearPct: Float = 0F,
     paddingValues: PaddingValues = PaddingValues(all = 4.dp),
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    debuggingEnabled: Boolean = false,
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
         HexagonalSegmentParams.EVEN
     },
@@ -71,7 +78,7 @@ fun Hexagonal7SegmentDisplay(
         y = paddingValues.calculateBottomPadding().value * density
     )
     SingleLineSegmentedDisplay(modifier = modifier, text = text, shearPct = shearPct) { char, origin, charWidth, charHeight ->
-        drawHex7SegmentCharSheared(
+        drawHex7SegmentChar(
             activatedSegments = charToActivatedSegments(char),
             origin = origin,
             width = charWidth,
@@ -80,11 +87,28 @@ fun Hexagonal7SegmentDisplay(
             topLeftPadding = topLeftPadding,
             bottomRightPadding = bottomRightPadding,
             thicknessMultiplier = thicknessMultiplier,
-            shearPct = shearPct,
+            topHeightPercentage = topHeightPercentage,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
+            debuggingEnabled = debuggingEnabled,
             hexagonalSegmentParams = hexagonalSegmentParams
         )
+//        drawHex7SegmentCharSheared(
+//            activatedSegments = charToActivatedSegments(char),
+//            origin = origin,
+//            width = charWidth,
+//            height = charHeight,
+//            gapSize = gapSize.value * density,
+//            topLeftPadding = topLeftPadding,
+//            bottomRightPadding = bottomRightPadding,
+//            thicknessMultiplier = thicknessMultiplier,
+//            topHeightPercentage = topHeightPercentage,
+//            shearPct = shearPct,
+//            activatedColor = activatedColor,
+//            deactivatedColor = deactivatedColor,
+//            debuggingEnabled = debuggingEnabled,
+//            hexagonalSegmentParams = hexagonalSegmentParams
+//        )
     }
 }
 
@@ -101,6 +125,7 @@ fun DrawScope.drawHex7SegmentCharSheared(
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     shearPct: Float = 0F,
+    debuggingEnabled: Boolean = false,
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
         HexagonalSegmentParams.EVEN
     }
@@ -129,6 +154,7 @@ fun DrawScope.drawHex7SegmentCharSheared(
         gapSize = gapSize,
         activatedColor = activatedColor,
         deactivatedColor = deactivatedColor,
+        debuggingEnabled = debuggingEnabled,
         hexagonalSegmentParams = hexagonalSegmentParams,
         offsetX = offsetXFun
     )
@@ -146,6 +172,7 @@ fun DrawScope.drawHex7SegmentChar(
     gapSize: Float = 5F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    debuggingEnabled: Boolean = false,
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams = { _, _ ->
         HexagonalSegmentParams.EVEN
     },
@@ -409,24 +436,73 @@ fun DrawScope.drawHex7SegmentChar(
 
 
     // debugging
-//    drawLine(
-//        brush = SolidColor(Color.Blue),
-//        start = Offset(x = centerX, y = topY),
-//        end = Offset(x = centerX, y = topY + drawableHeight),
-//    )
-//    drawLine(
-//        brush = SolidColor(Color.Green),
-//        start = Offset(x = leftmostX, y = topAreaSegmentCenterY),
-//        end = Offset(x = leftmostX + drawableWidth, y = topAreaSegmentCenterY),
-//    )
-//    drawLine(
-//        brush = SolidColor(Color.Green),
-//        start = Offset(x = leftmostX, y = topY + topAreaHeight),
-//        end = Offset(x = leftmostX + drawableWidth, y = topY + topAreaHeight),
-//    )
-//    drawLine(
-//        brush = SolidColor(Color.Green),
-//        start = Offset(x = leftmostX, y = bottomAreaSegmentCenterY),
-//        end = Offset(x = leftmostX + drawableWidth, y = bottomAreaSegmentCenterY),
-//    )
+    if (debuggingEnabled) {
+        // Drawable Area
+        drawRect(
+            brush = SolidColor(Color.Red),
+            topLeft = Offset(x = leftmostX, y = topY),
+            size = Size(width = drawableWidth, height = drawableHeight),
+            style = Stroke(width = Stroke.HairlineWidth)
+        )
+        // Sheared Drawable Area
+//        drawPath(
+//            path = Path().apply {
+//                this.transform(Matrix())
+//                moveTo(x = leftmostX + offsetX(0F, drawableWidth, drawableHeight), y = topY)
+//                lineTo(x = leftmostX + drawableWidth + offsetX(0F, drawableWidth, drawableHeight), y = topY)
+//                lineTo(x = leftmostX + drawableWidth + offsetX(drawableHeight, drawableWidth, drawableHeight), y = topY + drawableHeight)
+//                lineTo(x = leftmostX + offsetX(drawableHeight, drawableWidth, drawableHeight), y = topY + drawableHeight)
+//                close()
+//            },
+//            brush = SolidColor(Color.Red),
+//
+//        )
+//        drawPath(
+//            path = Path().apply {
+//                moveTo(x = leftmostX + offsetX(0F, drawableWidth, drawableHeight), y = topY)
+//                lineTo(x = leftmostX + drawableWidth + offsetX(0F, drawableWidth, drawableHeight), y = topY)
+//                lineTo(x = leftmostX + drawableWidth + offsetX(drawableHeight, drawableWidth, drawableHeight), y = topY + drawableHeight)
+//                lineTo(x = leftmostX + offsetX(drawableHeight, drawableWidth, drawableHeight), y = topY + drawableHeight)
+//                close()
+//                transform(Matrix(
+//                    floatArrayOf(
+//                        1f, 0.5f, 0f, 0f,
+//                        0f, 1f, 0f, 0f,
+//                        0f, 0f, 1f, 0f,
+//                        0f, 0f, 0f, 1f
+//                    )
+//                ))
+//            },
+//            brush = SolidColor(Color.Red),
+//
+//        )
+        // Vertical center line
+        drawLine(
+            brush = SolidColor(Color.Blue),
+            start = Offset(x = centerX, y = topY),
+            end = Offset(x = centerX, y = topY + drawableHeight)
+        )
+        // Sheared center line
+        drawLine(
+            brush = SolidColor(Color.Blue),
+            start = Offset(x = centerX + offsetX(0F, drawableWidth, drawableHeight), y = topY),
+            end = Offset(x = centerX + offsetX(drawableHeight, drawableWidth, drawableHeight), y = topY + drawableHeight),
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10F, 5F))
+        )
+        drawLine(
+            brush = SolidColor(Color.Green),
+            start = Offset(x = leftmostX, y = topAreaSegmentCenterY),
+            end = Offset(x = leftmostX + drawableWidth, y = topAreaSegmentCenterY),
+        )
+        drawLine(
+            brush = SolidColor(Color.Green),
+            start = Offset(x = leftmostX, y = topY + topAreaHeight),
+            end = Offset(x = leftmostX + drawableWidth, y = topY + topAreaHeight),
+        )
+        drawLine(
+            brush = SolidColor(Color.Green),
+            start = Offset(x = leftmostX, y = bottomAreaSegmentCenterY),
+            end = Offset(x = leftmostX + drawableWidth, y = bottomAreaSegmentCenterY),
+        )
+    }
 }

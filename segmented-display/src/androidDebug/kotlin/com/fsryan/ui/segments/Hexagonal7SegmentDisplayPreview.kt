@@ -49,6 +49,7 @@ fun ClassicSymmetricHexagonal7SegmentsAllHex() {
                 modifier = Modifier.background(Color.LightGray),
                 text = "0123456789AB",
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
@@ -57,6 +58,7 @@ fun ClassicSymmetricHexagonal7SegmentsAllHex() {
                 modifier = Modifier.background(Color.LightGray),
                 text = "CDEFGHIJKLMN",
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
@@ -65,6 +67,7 @@ fun ClassicSymmetricHexagonal7SegmentsAllHex() {
                 modifier = Modifier.background(Color.LightGray),
                 text = "OPQRSTUVWXYZ",
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
@@ -114,30 +117,33 @@ fun ClassicAsymmetricHexagonal7SegmentsAllHexSheared() {
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
                 modifier = Modifier.background(Color.LightGray),
-                text = "888888888888",
+                text = "0123456789AB",
                 thicknessMultiplier = 1.3F, // This thickness is pretty good
                 shearPct = 0.33F,
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
                 modifier = Modifier.background(Color.LightGray),
-                text = "888888888888",
+                text = "CDEFGHIJKLMN",
                 thicknessMultiplier = 1.3F, // This thickness is pretty good
                 shearPct = 0.33F,
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
                 modifier = Modifier.background(Color.LightGray),
-                text = "888888888888",
+                text = "OPQRSTUVWXYZ",
                 thicknessMultiplier = 1.3F, // This thickness is pretty good
                 shearPct = 0.33F,           // This shear is a pretty nice
                 activatedColor = Color.Black,
+                debuggingEnabled = true,
                 hexagonalSegmentParams = createHexagonalSegmentParams
             )
         }

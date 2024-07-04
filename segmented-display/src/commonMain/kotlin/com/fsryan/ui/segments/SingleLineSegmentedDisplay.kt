@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlin.math.abs
 
 /**
@@ -42,10 +45,35 @@ fun SingleLineSegmentedDisplay(
         val allocatedCharWidth = size.width / text.length
         val actualCharWidth = allocatedCharWidth / (1 + positiveShearPct / text.length)
         val shearPx = actualCharWidth * positiveShearPct
-        val xOffset = shearPx / 2                   // If we shear the
-        text.forEachIndexed { idx, char ->
-            val offset = Offset(x = idx * actualCharWidth + xOffset, y = 0F)
-            renderCharOnCanvas(char, offset, actualCharWidth, size.height)
+//        inset(horizontal = shearPx / 2) {
+//            text.forEachIndexed { idx, char ->
+//                val offset = Offset(x = idx * actualCharWidth/* + xOffset */, y = 0F)
+//                renderCharOnCanvas(char, offset, actualCharWidth, size.height)
+//            }
+//        }
+
+        // 1: use the
+
+        withTransform(
+            transformBlock = {
+                inset(horizontal = shearPx / 2)
+                translate()
+                transform(
+                    Matrix(
+                        floatArrayOf(
+                            0.75F, 0F, 0F, 0F,
+                            -0.5F, 1F, 0f, 0f,
+                            0f, 0f, 1f, 0f,
+                            0f, 0f, 0f, 1f
+                        )
+                    )
+                )
+            }
+        ) {
+            text.forEachIndexed { idx, char ->
+                val offset = Offset(x = idx * actualCharWidth/* + xOffset */, y = 0F)
+                renderCharOnCanvas(char, offset, actualCharWidth, size.height)
+            }
         }
     }
 }
