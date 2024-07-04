@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
@@ -55,14 +54,13 @@ fun App() {
                 mutableFloatStateOf(105F / 212)
             }
 
-            val density = LocalDensity.current.density
-            val gapSizeState = remember { mutableFloatStateOf(3 * density) }
+            val gapSizeMultiplierState = remember { mutableFloatStateOf(1F) }
             Column(modifier = Modifier.fillMaxWidth()) {
                 ShowDisplays(
                     charWidth = charWidth,
                     charHeight = charHeight,
                     activatedColor = Color.Red,
-                    gapSize = (gapSizeState.value / density).dp,
+                    gapSizeMultiplier = gapSizeMultiplierState.value,
                     hexagonalSegmentParams = hexagonalSegmentParamsState.value,
                     shearPct = shearPctState.value,
                     thicknessMultiplier = thicknessMultiplierState.value,
@@ -73,7 +71,7 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     shearPctState = shearPctState,
                     thicknessMultiplierState = thicknessMultiplierState,
-                    gapSizePxState = gapSizeState,
+                    gapSizeMultiplierState = gapSizeMultiplierState,
                     topHeightPercentageState = topHeightPercentageState,
                     drawDebugLinesState = drawDebugLinesState
                 )
@@ -86,7 +84,7 @@ fun App() {
 fun ShowDisplays(
     charWidth: Dp,
     charHeight: Dp,
-    gapSize: Dp,
+    gapSizeMultiplier: Float,
     hexagonalSegmentParams: (index: Int, leftTop: Boolean) -> HexagonalSegmentParams,
     shearPct: Float,
     activatedColor: Color,
@@ -106,7 +104,7 @@ fun ShowDisplays(
             Hexagonal7SegmentDisplay(
                 text = "01234567",
                 activatedColor = activatedColor,
-                gapSize = gapSize,
+                gapSizeMultiplier = gapSizeMultiplier,
                 hexagonalSegmentParams = hexagonalSegmentParams,
                 shearPct = shearPct,
                 thicknessMultiplier = thicknessMultiplier,
@@ -121,7 +119,7 @@ fun ShowDisplays(
             Hexagonal7SegmentDisplay(
                 text = "89ABCDEF",
                 activatedColor = activatedColor,
-                gapSize = gapSize,
+                gapSizeMultiplier = gapSizeMultiplier,
                 hexagonalSegmentParams = hexagonalSegmentParams,
                 shearPct = shearPct,
                 thicknessMultiplier = thicknessMultiplier,
@@ -137,7 +135,7 @@ fun ControlAssembly(
     modifier: Modifier = Modifier,
     shearPctState: MutableFloatState,
     thicknessMultiplierState: MutableFloatState,
-    gapSizePxState: MutableFloatState,
+    gapSizeMultiplierState: MutableFloatState,
     topHeightPercentageState: MutableFloatState,
     drawDebugLinesState: MutableState<Boolean>
 ) {
@@ -164,14 +162,12 @@ fun ControlAssembly(
         ) { value ->
             "Thickness Multiplier: ${value.roundToDecimals(3)}"
         }
-
-        val density = LocalDensity.current.density
         FloatValueSliderControl(
-            valueRange = 0F .. 20F,
-            steps = 2000,
-            state = gapSizePxState
+            valueRange = 0F .. 10F,
+            steps = 1000,
+            state = gapSizeMultiplierState
         ) { value ->
-            "Gap Size (dp): ${(value / density).roundToDecimals(3)}"
+            "Gap Size Multiplier: ${value.roundToDecimals(3)}"
         }
         FloatValueSliderControl(
             valueRange = 0F .. 1F,

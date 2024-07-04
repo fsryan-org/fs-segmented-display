@@ -54,7 +54,7 @@ fun Hexagonal7SegmentDisplay(
     text: String,
     thicknessMultiplier: Float = 1F,
     topHeightPercentage: Float = 105F / 212,
-    gapSize: Dp = 5.dp,
+    gapSizeMultiplier: Float = 1F,
     shearPct: Float = 0F,
     paddingValues: PaddingValues = PaddingValues(all = 4.dp),
     activatedColor: Color = Color.Black,
@@ -81,7 +81,7 @@ fun Hexagonal7SegmentDisplay(
             origin = origin,
             width = charWidth,
             height = charHeight,
-            gapSize = gapSize.value * density,
+            gapSizeMultiplier = gapSizeMultiplier,
             topLeftPadding = topLeftPadding,
             bottomRightPadding = bottomRightPadding,
             thicknessMultiplier = thicknessMultiplier,
@@ -103,7 +103,7 @@ fun DrawScope.drawHex7SegmentChar(
     bottomRightPadding: Offset,
     topHeightPercentage: Float = 105F / 212,
     thicknessMultiplier: Float = 1F,
-    gapSize: Float = 5F,
+    gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = false,
@@ -116,11 +116,12 @@ fun DrawScope.drawHex7SegmentChar(
     val drawableHeight = height - topLeftPadding.y - bottomRightPadding.y
     val topAreaHeight = drawableHeight * topHeightPercentage
     val bottomAreaHeight = drawableHeight - topAreaHeight
-    val halfGapSize = gapSize / 2
     
     // thickness is calculated pre-gap size. The gap size must eat into the
     // resulting size of each segment, but it does so differently per segment
     val configuredThickness = 29F / 240.37F * drawableHeight * thicknessMultiplier
+    val gapSize = gapSizeMultiplier * configuredThickness / 10
+    val halfGapSize = gapSize / 2
     val actualThickness = configuredThickness - halfGapSize // <-- the actual thickness of each segment
 
     // anchor points
