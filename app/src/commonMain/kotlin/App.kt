@@ -1,18 +1,16 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -41,6 +39,9 @@ fun App() {
         ) {
             val charWidth = maxWidth / 8
             val charHeight = charWidth * 2
+
+            val drawDebugLinesState = remember { mutableStateOf(false) }
+
             val hexagonalSegmentParamsState = remember {
                 mutableStateOf(HexagonalSegmentParams.classic7AsymmetricParamsFun())
             }
@@ -65,14 +66,16 @@ fun App() {
                     hexagonalSegmentParams = hexagonalSegmentParamsState.value,
                     shearPct = shearPctState.value,
                     thicknessMultiplier = thicknessMultiplierState.value,
-                    topHeightPercentage = topHeightPercentageState.value
+                    topHeightPercentage = topHeightPercentageState.value,
+                    drawDebugLines = drawDebugLinesState.value
                 )
                 ControlAssembly(
                     modifier = Modifier.fillMaxWidth(),
                     shearPctState = shearPctState,
                     thicknessMultiplierState = thicknessMultiplierState,
                     gapSizePxState = gapSizeState,
-                    topHeightPercentageState = topHeightPercentageState
+                    topHeightPercentageState = topHeightPercentageState,
+                    drawDebugLinesState = drawDebugLinesState
                 )
             }
         }
@@ -88,7 +91,8 @@ fun ShowDisplays(
     shearPct: Float,
     activatedColor: Color,
     thicknessMultiplier: Float,
-    topHeightPercentage: Float
+    topHeightPercentage: Float,
+    drawDebugLines: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -106,7 +110,8 @@ fun ShowDisplays(
                 hexagonalSegmentParams = hexagonalSegmentParams,
                 shearPct = shearPct,
                 thicknessMultiplier = thicknessMultiplier,
-                topHeightPercentage = topHeightPercentage
+                topHeightPercentage = topHeightPercentage,
+                debuggingEnabled = drawDebugLines
             )
         }
         Box(
@@ -120,7 +125,8 @@ fun ShowDisplays(
                 hexagonalSegmentParams = hexagonalSegmentParams,
                 shearPct = shearPct,
                 thicknessMultiplier = thicknessMultiplier,
-                topHeightPercentage = topHeightPercentage
+                topHeightPercentage = topHeightPercentage,
+                debuggingEnabled = drawDebugLines
             )
         }
     }
@@ -132,9 +138,17 @@ fun ControlAssembly(
     shearPctState: MutableFloatState,
     thicknessMultiplierState: MutableFloatState,
     gapSizePxState: MutableFloatState,
-    topHeightPercentageState: MutableFloatState
+    topHeightPercentageState: MutableFloatState,
+    drawDebugLinesState: MutableState<Boolean>
 ) {
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
+        Button(
+            onClick = {
+                drawDebugLinesState.value = !drawDebugLinesState.value
+            }
+        ) {
+            Text("Debug Lines: ${if (drawDebugLinesState.value) "ON" else "OFF"}")
+        }
         FloatValueSliderControl(
             valueRange = -1F .. 1F,
             steps = 2000,

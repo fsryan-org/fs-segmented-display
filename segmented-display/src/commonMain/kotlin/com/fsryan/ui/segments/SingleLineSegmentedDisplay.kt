@@ -4,12 +4,14 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Provides a [Canvas] on which to draw characters of the [text]. This is a low
@@ -18,18 +20,19 @@ import kotlin.math.abs
  * [renderCharOnCanvas] function gets called with the proper offset for that
  * char.
  *
- * > *Note*
- * > Shearing the characters makes them take up more width than they would
- * > otherwise take. This function will automatically adjust the width per char
- * > so that after the shearing has been applied correctly, the resulting width
- * > will be the same as if the characters were not sheared.
+ * This function also handles applying a shearing function to the output via
+ * transforming what the [renderCharOnCanvas] function rendered. It also
+ * handles the transformations necessary to resize and offset the output
+ * (because shearing would otherwise increase the width) Thus, Your
+ * [renderCharOnCanvas] function should assume that it is drawing a vertical
+ * character.
  *
  * @param modifier the [Modifier] applied to the [Canvas]
  * @param text the [String] whose characters should be drawn
- * @param shearPct 0 means the [renderCharOnCanvas] renders the characters
- * straight vertically. A positive number means that the characters are
- * rendered with the bottom sheared to the left and the top sheared to the
- * right.
+ * @param shearPct serves to transform the x axis as though it is skewed to the
+ * right/left as a percentage of the height. Thus, a value of 1 will skew the
+ * output to the right as much as the view is tall. A value of -1 will do the
+ * same, but will skew to the left instead of the right.
  * @param renderCharOnCanvas the function responsible for actually drawing the
  * characters on the canvas
  */
@@ -41,39 +44,54 @@ fun SingleLineSegmentedDisplay(
     renderCharOnCanvas: DrawScope.(char: Char, offset: Offset, charWidth: Float, charHeight: Float) -> Unit
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
-        val positiveShearPct = abs(shearPct)
-        val allocatedCharWidth = size.width / text.length
-        val actualCharWidth = allocatedCharWidth / (1 + positiveShearPct / text.length)
-        val shearPx = actualCharWidth * positiveShearPct
-//        inset(horizontal = shearPx / 2) {
-//            text.forEachIndexed { idx, char ->
-//                val offset = Offset(x = idx * actualCharWidth/* + xOffset */, y = 0F)
-//                renderCharOnCanvas(char, offset, actualCharWidth, size.height)
-//            }
-//        }
-
-        // 1: use the
-
-        withTransform(
-            transformBlock = {
-                inset(horizontal = shearPx / 2)
-                translate()
-                transform(
-                    Matrix(
-                        floatArrayOf(
-                            0.75F, 0F, 0F, 0F,
-                            -0.5F, 1F, 0f, 0f,
-                            0f, 0f, 1f, 0f,
-                            0f, 0f, 0f, 1f
-                        )
-                    )
-                )
-            }
-        ) {
+        if (shearPct == 0F) {
+            val charWidth = size.width / text.length
             text.forEachIndexed { idx, char ->
-                val offset = Offset(x = idx * actualCharWidth/* + xOffset */, y = 0F)
-                renderCharOnCanvas(char, offset, actualCharWidth, size.height)
+                val offset = Offset(x = idx * charWidth, y = 0F)
+                renderCharOnCanvas(char, offset, charWidth, size.height)
+            }
+        } else {
+            // Chances are extremely high that the exact same shearing matrix
+            // is desired by the end user in a real-world scenario, thus, we
+            // leverage a pool of matrices
+            val shearingMatrix = getOrCreateShearingMatrix(shearPct)
+
+            val shearPx = abs(shearPct) * size.height
+            val halfShearPx = shearPx / 2
+            withTransform(
+                transformBlock = {
+                    transform(shearingMatrix)
+                    translate(left = shearPct.sign * halfShearPx)
+                    inset(left = halfShearPx, top = 0F, right = halfShearPx, bottom = 0F)
+                }
+            ) {
+                val charWidth = size.width / text.length
+                text.forEachIndexed { idx, char ->
+                    val offset = Offset(x = idx * charWidth, y = 0F)
+                    renderCharOnCanvas(char, offset, charWidth, size.height)
+                }
             }
         }
     }
 }
+
+// access should already be bound to the main thread
+private fun getOrCreateShearingMatrix(shearPct: Float): Matrix {
+    return shearingMatrixPool[shearPct] ?: Matrix(
+        floatArrayOf(
+            1F, 0F, 0F, 0F,
+            -shearPct, 1F, 0F, 0F,
+            0F, 0F, 1F, 0F,
+            0F, 0F, 0F, 1F
+        )
+    ).also {
+        shearingMatrixPool[shearPct] = it
+        shearingMatrixKeyList.add(shearPct)
+        while (shearingMatrixKeyList.size > 10) {
+            val toRemove = shearingMatrixKeyList.removeFirst()
+            shearingMatrixPool.remove(toRemove)
+        }
+    }
+}
+private val shearingMatrixKeyList = mutableListOf<Float>()
+private val shearingMatrixPool = mutableMapOf<Float, Matrix>()
