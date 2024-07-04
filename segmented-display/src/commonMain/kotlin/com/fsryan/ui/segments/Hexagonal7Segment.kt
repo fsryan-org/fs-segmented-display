@@ -8,7 +8,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -144,225 +143,126 @@ fun DrawScope.drawHex7SegmentChar(
     val actualHorizontalSegmentWidth = configuredHorizontalSegmentWidth - gapSize
     val halfActualHorizontalSegmentWidth = actualHorizontalSegmentWidth / 2
 
-    // Horizontal anchors
-    val rectLeftX = centerX - halfActualHorizontalSegmentWidth
-    val rectRightX = centerX + halfActualHorizontalSegmentWidth
-
     // Vertical anchors
     val topAreaSegmentCenterY = topAreaCenterY + configuredThickness / 4
-    val topAreaRectTop = topAreaSegmentCenterY - halfTopSegmentHeight
-    val topAreaRectBottom = topAreaSegmentCenterY + halfTopSegmentHeight
     val bottomAreaSegmentCenterY = bottomAreaCenterY - configuredThickness / 4
-    val bottomAreaRectTop = bottomAreaSegmentCenterY - halfBottomSegmentHeight
-    val bottomAreaRectBottom = bottomAreaSegmentCenterY + halfBottomSegmentHeight
 
     // Draw top horizontal segment
+    var leftTopParams = hexagonalSegmentParams(0, true)
+    var rightBottomParams = hexagonalSegmentParams(0, false)
     drawPath(
-        path = Path().apply {
-            val leftParams = hexagonalSegmentParams(0, true)
-            val rightParams = hexagonalSegmentParams(0, false)
-
-            val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
-            val leftTopY = topY
-            val leftMiddleX = rectLeftX - actualThickness * leftParams.extThicknessHorizPct
-            val leftMiddleY = leftTopY + actualThickness * leftParams.extThicknessVertPct
-            val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
-            val leftBottomY = leftTopY + actualThickness
-            val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
-            val rightTopY = leftTopY
-            val rightMiddleX = rectRightX + actualThickness * rightParams.extThicknessHorizPct
-            val rightMiddleY = rightTopY + actualThickness * rightParams.extThicknessVertPct
-            val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
-            val rightBottomY = leftBottomY
-
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
-            close()
-        },
+        path = createHorizontalSegmentPath(
+            leftTopX = centerX - halfActualHorizontalSegmentWidth * leftTopParams.outerLengthPct,
+            leftTopY = topY,
+            centerX = centerX,
+            thickness = actualThickness,
+            halfSegmentWidth = halfActualHorizontalSegmentWidth,
+            leftParams = leftTopParams,
+            rightParams = rightBottomParams,
+            invertExtThicknessVertPct = false
+        ),
         color = if (activatedSegments and 0b1 == 1) activatedColor else deactivatedColor
     )
 
     // Draw top-left vertical segment
+    leftTopParams = hexagonalSegmentParams(1, true)
+    rightBottomParams = hexagonalSegmentParams(1, false)
     drawPath(
-        path = Path().apply {
-            val topParams = hexagonalSegmentParams(1, true)
-            val bottomParams = hexagonalSegmentParams(1, false)
-
-            val leftTopX = leftmostX
-            val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
-            val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
-            val topMiddleY = topAreaRectTop - actualThickness * topParams.extThicknessHorizPct
-            val rightTopX = leftTopX + actualThickness
-            val rightTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.innerLengthPct
-            val rightBottomX = rightTopX
-            val rightBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
-            val bottomMiddleY = topAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
-            val leftBottomX = leftTopX
-            val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
-
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
-            close()
-        },
+        path = createVerticalSegmentPath(
+            leftTopX = leftmostX,
+            leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * leftTopParams.outerLengthPct,
+            thickness = actualThickness,
+            centerY = topAreaSegmentCenterY,
+            halfSegmentHeight = halfTopSegmentHeight,
+            topParams = leftTopParams,
+            bottomParams = rightBottomParams,
+            leftIsInner = false
+        ),
         color = if (activatedSegments and 0b10 != 0) activatedColor else deactivatedColor
     )
 
     // Draw top-right vertical segment
+    leftTopParams = hexagonalSegmentParams(2, true)
+    rightBottomParams = hexagonalSegmentParams(2, false)
     drawPath(
-        path = Path().apply {
-            val topParams = hexagonalSegmentParams(2, true)
-            val bottomParams = hexagonalSegmentParams(2, false)
-
-            val leftTopX = rightmostX - actualThickness
-            val leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.innerLengthPct
-            val topMiddleX = leftTopX + actualThickness * (1 - topParams.extThicknessVertPct)
-            val topMiddleY = topAreaRectTop - actualThickness * topParams.extThicknessHorizPct
-            val rightTopX = leftTopX + actualThickness
-            val rightTopY = topAreaSegmentCenterY - halfTopSegmentHeight * topParams.outerLengthPct
-            val rightBottomX = rightTopX
-            val rightBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.outerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * (1 - bottomParams.extThicknessVertPct)
-            val bottomMiddleY = topAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
-            val leftBottomX = leftTopX
-            val leftBottomY = topAreaSegmentCenterY + halfTopSegmentHeight * bottomParams.innerLengthPct
-
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
-            close()
-        },
+        path = createVerticalSegmentPath(
+            leftTopX = rightmostX - actualThickness,
+            leftTopY = topAreaSegmentCenterY - halfTopSegmentHeight * leftTopParams.innerLengthPct,
+            thickness = actualThickness,
+            centerY = topAreaSegmentCenterY,
+            halfSegmentHeight = halfTopSegmentHeight,
+            topParams = leftTopParams,
+            bottomParams = rightBottomParams,
+            leftIsInner = true
+        ),
         color = if (activatedSegments and 0b100 != 0) activatedColor else deactivatedColor
     )
 
     // Draw middle horizontal segment
+    leftTopParams = hexagonalSegmentParams(3, true)
+    rightBottomParams = hexagonalSegmentParams(3, false)
     drawPath(
-        path = Path().apply {
-            val leftParams = hexagonalSegmentParams(3, true)
-            val rightParams = hexagonalSegmentParams(3, false)
-
-            val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
-            val leftTopY = topY + topAreaHeight - actualThickness / 2
-            val leftMiddleX = rectLeftX - actualThickness * leftParams.extThicknessHorizPct
-            val leftMiddleY = leftTopY + actualThickness * leftParams.extThicknessVertPct
-            val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
-            val leftBottomY = leftTopY + actualThickness
-            val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
-            val rightTopY = leftTopY
-            val rightMiddleX = rectRightX + actualThickness * rightParams.extThicknessHorizPct
-            val rightMiddleY = rightTopY + actualThickness * rightParams.extThicknessVertPct
-            val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
-            val rightBottomY = leftBottomY
-
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
-            close()
-        },
+        path = createHorizontalSegmentPath(
+            leftTopX = centerX - halfActualHorizontalSegmentWidth * leftTopParams.outerLengthPct,
+            leftTopY = topY + topAreaHeight - actualThickness / 2,
+            centerX = centerX,
+            thickness = actualThickness,
+            halfSegmentWidth = halfActualHorizontalSegmentWidth,
+            leftParams = leftTopParams,
+            rightParams = rightBottomParams,
+            invertExtThicknessVertPct = false
+        ),
         color = if (activatedSegments and 0b1000 != 0) activatedColor else deactivatedColor
     )
 
     // Draw bottom-left vertical segment
+    leftTopParams = hexagonalSegmentParams(4, true)
+    rightBottomParams = hexagonalSegmentParams(4, false)
     drawPath(
-        path = Path().apply {
-            val topParams = hexagonalSegmentParams(4, true)
-            val bottomParams = hexagonalSegmentParams(4, false)
-
-            val leftTopX = leftmostX
-            val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
-            val topMiddleX = leftTopX + actualThickness * topParams.extThicknessVertPct
-            val topMiddleY = bottomAreaRectTop - actualThickness * topParams.extThicknessHorizPct
-            val rightTopX = leftTopX + actualThickness
-            val rightTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.innerLengthPct
-            val rightBottomX = rightTopX
-            val rightBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * bottomParams.extThicknessVertPct
-            val bottomMiddleY = bottomAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
-            val leftBottomX = leftTopX
-            val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
-
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
-            close()
-        },
+        path = createVerticalSegmentPath(
+            leftTopX = leftmostX,
+            leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * leftTopParams.outerLengthPct,
+            thickness = actualThickness,
+            centerY = bottomAreaSegmentCenterY,
+            halfSegmentHeight = halfBottomSegmentHeight,
+            topParams = leftTopParams,
+            bottomParams = rightBottomParams,
+            leftIsInner = false
+        ),
         color = if (activatedSegments and 0b10000 != 0) activatedColor else deactivatedColor
     )
 
     // Draw bottom-right vertical segment
+    leftTopParams = hexagonalSegmentParams(5, true)
+    rightBottomParams = hexagonalSegmentParams(5, false)
     drawPath(
-        path = Path().apply {
-            val topParams = hexagonalSegmentParams(5, true)
-            val bottomParams = hexagonalSegmentParams(5, false)
-
-            val leftTopX = rightmostX - actualThickness
-            val leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.innerLengthPct
-            val topMiddleX = leftTopX + actualThickness * (1 - topParams.extThicknessVertPct)
-            val topMiddleY = bottomAreaRectTop - actualThickness * topParams.extThicknessHorizPct
-            val rightTopX = leftTopX + actualThickness
-            val rightTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * topParams.outerLengthPct
-            val rightBottomX = rightTopX
-            val rightBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.outerLengthPct
-            val bottomMiddleX = leftTopX + actualThickness * (1 - bottomParams.extThicknessVertPct)
-            val bottomMiddleY = bottomAreaRectBottom + actualThickness * bottomParams.extThicknessHorizPct
-            val leftBottomX = leftTopX
-            val leftBottomY = bottomAreaSegmentCenterY + halfBottomSegmentHeight * bottomParams.innerLengthPct
-
-            moveTo(bottomMiddleX, bottomMiddleY)
-            lineTo(leftBottomX, leftBottomY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(topMiddleX, topMiddleY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightBottomX, rightBottomY)
-            close()
-        },
+        path = createVerticalSegmentPath(
+            leftTopX = rightmostX - actualThickness,
+            leftTopY = bottomAreaSegmentCenterY - halfBottomSegmentHeight * leftTopParams.innerLengthPct,
+            thickness = actualThickness,
+            centerY = bottomAreaSegmentCenterY,
+            halfSegmentHeight = halfBottomSegmentHeight,
+            topParams = leftTopParams,
+            bottomParams = rightBottomParams,
+            leftIsInner = true
+        ),
         color = if (activatedSegments and 0b100000 != 0) activatedColor else deactivatedColor
     )
 
     // Draw bottom horizontal segment
+    leftTopParams = hexagonalSegmentParams(6, true)
+    rightBottomParams = hexagonalSegmentParams(6, false)
     drawPath(
-        path = Path().apply {
-            val leftParams = hexagonalSegmentParams(6, true)
-            val rightParams = hexagonalSegmentParams(6, false)
-
-            val leftTopX = centerX - halfActualHorizontalSegmentWidth * leftParams.innerLengthPct
-            val leftTopY = bottomY - actualThickness
-            val leftMiddleX = rectLeftX - actualThickness * leftParams.extThicknessHorizPct
-            val leftMiddleY = leftTopY + actualThickness * (1 - leftParams.extThicknessVertPct)
-            val leftBottomX = centerX - halfActualHorizontalSegmentWidth * leftParams.outerLengthPct
-            val leftBottomY = leftTopY + actualThickness
-            val rightTopX = centerX + halfActualHorizontalSegmentWidth * rightParams.innerLengthPct
-            val rightTopY = leftTopY
-            val rightMiddleX = rectRightX + actualThickness * rightParams.extThicknessHorizPct
-            val rightMiddleY = rightTopY + actualThickness * (1 - rightParams.extThicknessVertPct)
-            val rightBottomX = centerX + halfActualHorizontalSegmentWidth * rightParams.outerLengthPct
-            val rightBottomY = leftBottomY
-
-            moveTo(leftMiddleX, leftMiddleY)
-            lineTo(leftTopX, leftTopY)
-            lineTo(rightTopX, rightTopY)
-            lineTo(rightMiddleX, rightMiddleY)
-            lineTo(rightBottomX, rightBottomY)
-            lineTo(leftBottomX, leftBottomY)
-            close()
-        },
+        path = createHorizontalSegmentPath(
+            leftTopX = centerX - halfActualHorizontalSegmentWidth * leftTopParams.innerLengthPct,
+            leftTopY = bottomY - actualThickness,
+            centerX = centerX,
+            thickness = actualThickness,
+            halfSegmentWidth = halfActualHorizontalSegmentWidth,
+            leftParams = leftTopParams,
+            rightParams = rightBottomParams,
+            invertExtThicknessVertPct = true
+        ),
         color = if (activatedSegments and 0b1000000 != 0) activatedColor else deactivatedColor
     )
 
@@ -405,5 +305,79 @@ fun DrawScope.drawHex7SegmentChar(
             start = Offset(x = leftmostX, y = bottomAreaSegmentCenterY),
             end = Offset(x = leftmostX + drawableWidth, y = bottomAreaSegmentCenterY),
         )
+    }
+}
+
+private fun createHorizontalSegmentPath(
+    leftTopX: Float,
+    leftTopY: Float,
+    centerX: Float,
+    thickness: Float,
+    halfSegmentWidth: Float,
+    leftParams: HexagonalSegmentParams,
+    rightParams: HexagonalSegmentParams,
+    invertExtThicknessVertPct: Boolean
+): Path {
+    val rectLeftX = centerX - halfSegmentWidth
+    val rectRightX = centerX + halfSegmentWidth
+
+    val leftExtThicknessVertPct = if (invertExtThicknessVertPct) 1 - leftParams.extThicknessVertPct else leftParams.extThicknessVertPct
+    val rightExtThicknessVertPct = if (invertExtThicknessVertPct) 1 - rightParams.extThicknessVertPct else rightParams.extThicknessVertPct
+
+    val leftMiddleX = rectLeftX - thickness * leftParams.extThicknessHorizPct
+    val leftMiddleY = leftTopY + thickness * leftExtThicknessVertPct
+    val leftBottomX = centerX - halfSegmentWidth * leftParams.innerLengthPct
+    val leftBottomY = leftTopY + thickness
+    val rightTopX = centerX + halfSegmentWidth * rightParams.outerLengthPct
+    val rightTopY = leftTopY
+    val rightMiddleX = rectRightX + thickness * rightParams.extThicknessHorizPct
+    val rightMiddleY = rightTopY + thickness * rightExtThicknessVertPct
+    val rightBottomX = centerX + halfSegmentWidth * rightParams.innerLengthPct
+    val rightBottomY = leftBottomY
+    return Path().apply {
+        moveTo(leftMiddleX, leftMiddleY)
+        lineTo(leftTopX, leftTopY)
+        lineTo(rightTopX, rightTopY)
+        lineTo(rightMiddleX, rightMiddleY)
+        lineTo(rightBottomX, rightBottomY)
+        lineTo(leftBottomX, leftBottomY)
+        close()
+    }
+}
+
+private fun createVerticalSegmentPath(
+    leftTopX: Float,
+    leftTopY: Float,
+    thickness: Float,
+    centerY: Float,
+    halfSegmentHeight: Float,
+    topParams: HexagonalSegmentParams,
+    bottomParams: HexagonalSegmentParams,
+    leftIsInner: Boolean
+): Path {
+    val rectTop = centerY - halfSegmentHeight
+    val rectBottom = centerY + halfSegmentHeight
+
+    val topExtThicknessVertPct = if (leftIsInner) 1 - topParams.extThicknessVertPct else topParams.extThicknessVertPct
+    val bottomExtThicknessVertPct = if (leftIsInner) 1 - bottomParams.extThicknessVertPct else bottomParams.extThicknessVertPct
+
+    val topMiddleX = leftTopX + thickness * topExtThicknessVertPct
+    val topMiddleY = rectTop - thickness * topParams.extThicknessHorizPct
+    val rightTopX = leftTopX + thickness
+    val rightTopY = centerY - halfSegmentHeight * (if (leftIsInner) topParams.outerLengthPct else topParams.innerLengthPct)
+    val rightBottomX = rightTopX
+    val rightBottomY = centerY + halfSegmentHeight * (if (leftIsInner) bottomParams.outerLengthPct else bottomParams.innerLengthPct)
+    val bottomMiddleX = leftTopX + thickness * bottomExtThicknessVertPct
+    val bottomMiddleY = rectBottom + thickness * bottomParams.extThicknessHorizPct
+    val leftBottomX = leftTopX
+    val leftBottomY = centerY + halfSegmentHeight * (if (leftIsInner) bottomParams.innerLengthPct else bottomParams.outerLengthPct)
+    return Path().apply {
+        moveTo(bottomMiddleX, bottomMiddleY)
+        lineTo(leftBottomX, leftBottomY)
+        lineTo(leftTopX, leftTopY)
+        lineTo(topMiddleX, topMiddleY)
+        lineTo(rightTopX, rightTopY)
+        lineTo(rightBottomX, rightBottomY)
+        close()
     }
 }
