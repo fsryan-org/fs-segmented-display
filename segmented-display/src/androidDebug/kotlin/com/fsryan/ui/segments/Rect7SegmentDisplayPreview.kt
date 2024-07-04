@@ -12,8 +12,17 @@ fun Rectangular7SegmentsAllHex() {
     Rect7SegmentDisplay(
         modifier = Modifier.background(Color.LightGray),
         text = "0123456789ABCDEF",
-        thicknessMultiplier = 0.6F,
-        gapSize = 3F,
+        activatedColor = Color.Black
+    )
+}
+
+@Composable
+@Preview(showBackground = true, widthDp = 1675, heightDp = 179)
+fun Rectangular7SegmentsAllHexSheared() {
+    Rect7SegmentDisplay(
+        modifier = Modifier.background(Color.LightGray),
+        text = "0123456789ABCDEF",
+        shearPct = 0.33F,
         activatedColor = Color.Black
     )
 }

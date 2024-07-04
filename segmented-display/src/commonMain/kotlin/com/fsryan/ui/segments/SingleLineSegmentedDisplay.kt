@@ -29,7 +29,7 @@ import kotlin.math.sign
  *
  * @param modifier the [Modifier] applied to the [Canvas]
  * @param text the [String] whose characters should be drawn
- * @param shearPct serves to transform the x axis as though it is skewed to the
+ * @param shearPct serves to transform the x-axis as though it is skewed to the
  * right/left as a percentage of the height. Thus, a value of 1 will skew the
  * output to the right as much as the view is tall. A value of -1 will do the
  * same, but will skew to the left instead of the right.

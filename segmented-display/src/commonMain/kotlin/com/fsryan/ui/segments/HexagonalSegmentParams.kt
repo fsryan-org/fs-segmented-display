@@ -46,6 +46,9 @@ interface HexagonalSegmentParams {
     }
 }
 
+/**
+ * Creates a [HexagonalSegmentParams] instance
+ */
 fun HexagonalSegmentParams(
     outerLengthPct: Float,
     innerLengthPct: Float,
@@ -58,6 +61,11 @@ fun HexagonalSegmentParams(
     extThicknessHorizPct = extThicknessHorizPct
 )
 
+/**
+ * Creates a function that will properly configure each of the 14 tips of a
+ * 7-segment display symmetrically following the classic 7-segment display
+ * example.
+ */
 fun HexagonalSegmentParams.Companion.classic7SymmetricParamsFun(
     outerLengthPct: Float = 1.375F,
     innerLengthPct: Float = 1F,

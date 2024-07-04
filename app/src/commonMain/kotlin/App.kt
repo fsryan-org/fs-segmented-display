@@ -51,12 +51,13 @@ fun App() {
                 mutableFloatStateOf(1F)
             }
             val topHeightPercentageState = remember {
-                mutableFloatStateOf(105F / 212)
+                mutableFloatStateOf(0.495F)
             }
 
             val gapSizeMultiplierState = remember { mutableFloatStateOf(1F) }
             Column(modifier = Modifier.fillMaxWidth()) {
                 ShowDisplays(
+                    modifier = Modifier.weight(1F),
                     charWidth = charWidth,
                     charHeight = charHeight,
                     activatedColor = Color.Red,
@@ -68,7 +69,7 @@ fun App() {
                     drawDebugLines = drawDebugLinesState.value
                 )
                 ControlAssembly(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().weight(1F),
                     shearPctState = shearPctState,
                     thicknessMultiplierState = thicknessMultiplierState,
                     gapSizeMultiplierState = gapSizeMultiplierState,
@@ -82,6 +83,7 @@ fun App() {
 
 @Composable
 fun ShowDisplays(
+    modifier: Modifier = Modifier,
     charWidth: Dp,
     charHeight: Dp,
     gapSizeMultiplier: Float,
@@ -93,7 +95,7 @@ fun ShowDisplays(
     drawDebugLines: Boolean
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

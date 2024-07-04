@@ -2,8 +2,6 @@ package com.fsryan.ui.segments
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -13,21 +11,22 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 fun Rect7SegmentDisplay(
     modifier: Modifier = Modifier,
     text: String,
+    shearPct: Float = 0F,
     thicknessMultiplier: Float = 1F,
-    gapSize: Float = 5F,
+    gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     charToActivatedSegments: (Char) -> Int = ::translateHexToActiveSegments
 ) {
     val topLeftPadding = Offset(x = 10F, y = 10F)
     val bottomRightPadding = Offset(x = 10F, y = 10F)
-    SingleLineSegmentedDisplay(modifier = modifier, text = text) { char, origin, charWidth, charHeight ->
+    SingleLineSegmentedDisplay(modifier = modifier, text = text, shearPct = shearPct) { char, origin, charWidth, charHeight ->
         drawRect7SegmentChar(
             activatedSegments = charToActivatedSegments(char),
             origin = origin,
             width = charWidth,
             height = charHeight,
-            gapSize = gapSize,
+            gapSizeMultiplier = gapSizeMultiplier,
             topLeftPadding = topLeftPadding,
             bottomRightPadding = bottomRightPadding,
             thicknessMultiplier = thicknessMultiplier,
@@ -46,7 +45,7 @@ fun DrawScope.drawRect7SegmentChar(
     bottomRightPadding: Offset,
     topAreaPercentage: Float = 105F / 212,
     thicknessMultiplier: Float = 1F,
-    gapSize: Float,
+    gapSizeMultiplier: Float,
     activatedColor: Color,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F)
 ) {
@@ -54,11 +53,12 @@ fun DrawScope.drawRect7SegmentChar(
     val drawableHeight = height - topLeftPadding.y - bottomRightPadding.y
     val topAreaHeight = drawableHeight * topAreaPercentage
     val bottomAreaHeight = drawableHeight - topAreaHeight
-    val halfGapSize = gapSize / 2
     
     // thickness is calculated pre-gap size. The gap size must eat into the
     // resulting size of each segment, but it does so differently per segment
     val configuredThickness = 29F / 240.37F * drawableHeight * thicknessMultiplier
+    val gapSize = gapSizeMultiplier * configuredThickness / 10
+    val halfGapSize = gapSize / 2
     val actualThickness = configuredThickness - halfGapSize // <-- the actual thickness of each segment
 
     // anchor points
@@ -95,7 +95,7 @@ fun DrawScope.drawRect7SegmentChar(
             val leftX = topLeftX
             val topY = topLeftY + configuredThickness + halfGapSize
             val rightX = leftX + actualThickness
-            val bottomY = topY + topSegmentHeight - gapSize
+            val bottomY = topY + topSegmentHeight - gapSizeMultiplier
             moveTo(leftX, topY)
             lineTo(rightX, topY)
             lineTo(rightX, bottomY)
@@ -111,7 +111,7 @@ fun DrawScope.drawRect7SegmentChar(
             val leftX = bottomRightX - actualThickness
             val topY = topLeftY + configuredThickness + halfGapSize
             val rightX = bottomRightX
-            val bottomY = topY + topSegmentHeight - gapSize
+            val bottomY = topY + topSegmentHeight - gapSizeMultiplier
             moveTo(leftX, topY)
             lineTo(rightX, topY)
             lineTo(rightX, bottomY)
@@ -144,7 +144,7 @@ fun DrawScope.drawRect7SegmentChar(
             val leftX = topLeftX
             val topY = bottomRightY - configuredThickness - bottomSegmentHeight + halfGapSize
             val rightX = leftX + actualThickness
-            val bottomY = topY + bottomSegmentHeight - gapSize
+            val bottomY = topY + bottomSegmentHeight - gapSizeMultiplier
             moveTo(leftX, topY)
             lineTo(rightX, topY)
             lineTo(rightX, bottomY)
@@ -160,7 +160,7 @@ fun DrawScope.drawRect7SegmentChar(
             val leftX = bottomRightX - actualThickness
             val topY = bottomRightY - configuredThickness - bottomSegmentHeight + halfGapSize
             val rightX = bottomRightX
-            val bottomY = topY + bottomSegmentHeight - gapSize
+            val bottomY = topY + bottomSegmentHeight - gapSizeMultiplier
             moveTo(leftX, topY)
             lineTo(rightX, topY)
             lineTo(rightX, bottomY)
@@ -175,7 +175,7 @@ fun DrawScope.drawRect7SegmentChar(
         path = Path().apply {
             val leftX = topLeftX + configuredThickness + halfGapSize
             val topY = bottomRightY - actualThickness
-            val rightX = leftX + configuredHorizontalSegmentWidth - gapSize
+            val rightX = leftX + configuredHorizontalSegmentWidth - gapSizeMultiplier
             val bottomY = bottomRightY
             moveTo(leftX, topY)
             lineTo(rightX, topY)

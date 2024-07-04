@@ -27,8 +27,9 @@ import androidx.compose.ui.unit.dp
  * @param thicknessMultiplier A multiplier applied to the thickness of the
  * segments. The thickness of each segment has a large effect on the ultimate
  * look of the character.
- * @param gapSize The size (in [Dp]) of the gaps between the segments of each
- * character. This, too, plays a large role in the look of the characters.
+ * @param gapSizeMultiplier While the gap between segments is a reality of any
+ * real segmented display. It is computed internally based upon the thickness
+ * of the segments, but you can adjust it with this multiplier.
  * @param shearPct This acts like a multiplier of the width of a character that
  * results in the bottom of the character being shifted to the left/right and
  * the top of the character being shifted to the right/left when the value is
@@ -53,7 +54,7 @@ fun Hexagonal7SegmentDisplay(
     modifier: Modifier = Modifier,
     text: String,
     thicknessMultiplier: Float = 1F,
-    topHeightPercentage: Float = 105F / 212,
+    topHeightPercentage: Float = 0.495F,
     gapSizeMultiplier: Float = 1F,
     shearPct: Float = 0F,
     paddingValues: PaddingValues = PaddingValues(all = 4.dp),
@@ -94,14 +95,14 @@ fun Hexagonal7SegmentDisplay(
     }
 }
 
-fun DrawScope.drawHex7SegmentChar(
+internal fun DrawScope.drawHex7SegmentChar(
     activatedSegments: Int,
     origin: Offset,
     width: Float,
     height: Float,
     topLeftPadding: Offset,
     bottomRightPadding: Offset,
-    topHeightPercentage: Float = 105F / 212,
+    topHeightPercentage: Float = 0.495F,
     thicknessMultiplier: Float = 1F,
     gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,

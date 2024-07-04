@@ -1,4 +1,4 @@
-package com.fsryan.tools
+package com.fsryan.ui.segmenteddisplay
 
 import App
 import android.os.Bundle

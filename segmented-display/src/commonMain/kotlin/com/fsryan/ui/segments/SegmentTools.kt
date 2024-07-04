@@ -1,5 +1,11 @@
 package com.fsryan.ui.segments
 
+/**
+ * A basic translation function that translates a character to the active segments.
+ *
+ * @param char the character to translate
+ * @return the active segments for the character
+ */
 fun translateHexToActiveSegments(char: Char): Int = when (char) {
     '0' -> 0b01110111
     '1' -> 0b00100100
