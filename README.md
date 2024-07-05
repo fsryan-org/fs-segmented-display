@@ -13,4 +13,4 @@ Eventually, this will be available as a library on Maven Central.
 ## A Tantalizing Gif
 The below is a quick example of some of how you can style the segmented display today. 
 
-![Example Usage](./docs/images/app_use_example.gif)
+![Example Usage](./docs/images/app_use_browser_example.gif)
