@@ -79,10 +79,10 @@ fun SingleLineSegmentedDisplay(
 private fun getOrCreateShearingMatrix(shearPct: Float): Matrix {
     return shearingMatrixPool[shearPct] ?: Matrix(
         floatArrayOf(
-            1F, 0F, 0F, 0F,
-            -shearPct, 1F, 0F, 0F,
-            0F, 0F, 1F, 0F,
-            0F, 0F, 0F, 1F
+            1F,         0F, 0F, 0F,
+            -shearPct,  1F, 0F, 0F,
+            0F,         0F, 1F, 0F,
+            0F,         0F, 0F, 1F
         )
     ).also {
         shearingMatrixPool[shearPct] = it
