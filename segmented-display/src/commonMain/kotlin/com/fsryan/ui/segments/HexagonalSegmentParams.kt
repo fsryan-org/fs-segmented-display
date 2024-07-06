@@ -67,7 +67,7 @@ fun HexagonalSegmentParams(
  * example.
  */
 fun HexagonalSegmentParams.Companion.classic7SymmetricParamsFun(
-    outerLengthPct: Float = 1.375F,
+    outerLengthPct: Float = 1.372F,
     innerLengthPct: Float = 1F,
     extThicknessVertPct: Float = 0.25F,
     extThicknessHorizPct: Float = 0.75F
@@ -89,6 +89,10 @@ fun HexagonalSegmentParams.Companion.classic7SymmetricParamsFun(
             else -> EVEN
         }
     }
+}
+
+fun HexagonalSegmentParams.Companion.evenFun(): (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams {
+    return { _, _ -> EVEN }
 }
 
 fun HexagonalSegmentParams.Companion.classic7AsymmetricParamsFun(

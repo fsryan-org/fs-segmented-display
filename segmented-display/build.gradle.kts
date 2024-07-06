@@ -2,7 +2,6 @@ import fsryan.shouldConfigureAndroid
 import fsryan.shouldConfigureIOS
 import fsryan.shouldConfigureJvm
 import fsryan.shouldConfigureWASM
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -28,15 +27,6 @@ kotlin {
                         useChromeHeadless()
                     }
                 }
-//            commonWebpackConfig {
-//                outputFileName = "fs-segmented-display.js"
-//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-//                    static = (static ?: mutableListOf()).apply {
-//                        // Serve sources to debug inside browser
-//                        add(project.projectDir.path)
-//                    }
-//                }
-//            }
             }
             binaries.library()
         }
@@ -53,7 +43,7 @@ kotlin {
     }
 
     if (shouldConfigureJvm()) {
-        jvm("desktop")
+        jvm("jvm")
         jvmToolchain(17)
     }
 
@@ -65,29 +55,19 @@ kotlin {
 
     
     sourceSets {
-        val desktopMain by getting
+        val jvmMain by getting
 
-        // TODO: switch compose preview to debug only.
         androidMain.dependencies {
-//            implementation(libs.androidx.activity.compose)
         }
 
         maybeCreate("androidDebug").apply {
             dependencies {
-                implementation(compose.preview)
             }
         }
 
         commonMain.dependencies {
-            implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
             implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-        }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
         }
     }
 }
@@ -123,17 +103,5 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
-    }
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.fsryan.ui"
-            packageVersion = "1.0.0"
-        }
     }
 }

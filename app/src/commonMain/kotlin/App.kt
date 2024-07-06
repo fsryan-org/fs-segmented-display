@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +30,8 @@ import androidx.compose.ui.unit.times
 import com.fsryan.ui.segments.Hexagonal7SegmentDisplay
 import com.fsryan.ui.segments.HexagonalSegmentParams
 import com.fsryan.ui.segments.classic7AsymmetricParamsFun
+import com.fsryan.ui.segments.classic7SymmetricParamsFun
+import com.fsryan.ui.segments.evenFun
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
 
@@ -42,7 +50,7 @@ fun App() {
             val drawDebugLinesState = remember { mutableStateOf(false) }
 
             val hexagonalSegmentParamsState = remember {
-                mutableStateOf(HexagonalSegmentParams.classic7AsymmetricParamsFun())
+                mutableStateOf("Classic Asymmetric" to HexagonalSegmentParams.classic7AsymmetricParamsFun())
             }
             val shearPctState = remember {
                 mutableFloatStateOf(0F)
@@ -62,7 +70,7 @@ fun App() {
                     charHeight = charHeight,
                     activatedColor = Color.Red,
                     gapSizeMultiplier = gapSizeMultiplierState.value,
-                    hexagonalSegmentParams = hexagonalSegmentParamsState.value,
+                    hexagonalSegmentParams = hexagonalSegmentParamsState.value.second,
                     shearPct = shearPctState.value,
                     thicknessMultiplier = thicknessMultiplierState.value,
                     topHeightPercentage = topHeightPercentageState.value,
@@ -74,7 +82,8 @@ fun App() {
                     thicknessMultiplierState = thicknessMultiplierState,
                     gapSizeMultiplierState = gapSizeMultiplierState,
                     topHeightPercentageState = topHeightPercentageState,
-                    drawDebugLinesState = drawDebugLinesState
+                    drawDebugLinesState = drawDebugLinesState,
+                    hexagonalSegmentParamsState = hexagonalSegmentParamsState
                 )
             }
         }
@@ -139,15 +148,37 @@ fun ControlAssembly(
     thicknessMultiplierState: MutableFloatState,
     gapSizeMultiplierState: MutableFloatState,
     topHeightPercentageState: MutableFloatState,
-    drawDebugLinesState: MutableState<Boolean>
+    drawDebugLinesState: MutableState<Boolean>,
+    hexagonalSegmentParamsState: MutableState<Pair<String, (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams>>
 ) {
-    Column(modifier = modifier.padding(horizontal = 16.dp)) {
-        Button(
-            onClick = {
-                drawDebugLinesState.value = !drawDebugLinesState.value
-            }
+    Column(
+        modifier = modifier.padding(all = 16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text("Debug Lines: ${if (drawDebugLinesState.value) "ON" else "OFF"}")
+            Button(
+                onClick = {
+                    drawDebugLinesState.value = !drawDebugLinesState.value
+                }
+            ) {
+                Text("Debug Lines: ${if (drawDebugLinesState.value) "ON" else "OFF"}")
+            }
+            HexagonalSegmentParamsPresetDropDown(hexagonalSegmentParamsState)
+            Button(
+                onClick = {
+                    shearPctState.value = 0F
+                    thicknessMultiplierState.value = 1F
+                    gapSizeMultiplierState.value = 1F
+                    topHeightPercentageState.value = .495F
+                    drawDebugLinesState.value = false
+                    hexagonalSegmentParamsState.value = "Classic Asymmetric" to HexagonalSegmentParams.classic7AsymmetricParamsFun()
+                }
+            ) {
+                Text("Restore Defaults")
+            }
         }
         FloatValueSliderControl(
             valueRange = -1F .. 1F,
@@ -178,6 +209,54 @@ fun ControlAssembly(
         ) {
             value ->
             "Top Section: ${value.roundToDecimals(3) * 100}%"
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HexagonalSegmentParamsPresetDropDown(
+    hexagonalSegmentParamsState: MutableState<Pair<String, (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams>>
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        modifier = Modifier,
+        expanded = isExpanded,
+        onExpandedChange = { newValue ->
+            isExpanded = newValue
+        }
+    ) {
+        TextField(
+            modifier = Modifier.menuAnchor(),
+            value = hexagonalSegmentParamsState.value.first,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(isExpanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = {
+                isExpanded = false
+            }
+        ) {
+            sequenceOf(
+                "Classic Symmetric Uneven" to HexagonalSegmentParams.classic7SymmetricParamsFun(),
+                "Classic Symmetric Even" to HexagonalSegmentParams.evenFun(),
+                "Classic Asymmetric" to HexagonalSegmentParams.classic7AsymmetricParamsFun()
+            ).forEach { pair ->
+                DropdownMenuItem(
+                    text = {
+                        Text(pair.first)
+                    },
+                    onClick = {
+                        isExpanded = false
+                        hexagonalSegmentParamsState.value = pair
+                    }
+                )
+            }
         }
     }
 }
