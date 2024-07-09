@@ -1,4 +1,3 @@
-import fsryan.canBuildIOS
 import fsryan.shouldConfigureAndroid
 import fsryan.shouldConfigureIOS
 import fsryan.shouldConfigureJvm
@@ -9,7 +8,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import java.util.Base64
 
 plugins {
     `maven-publish`

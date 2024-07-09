@@ -67,10 +67,10 @@ fun HexagonalSegmentParams(
  * example.
  */
 fun HexagonalSegmentParams.Companion.classic7SymmetricParamsFun(
-    outerLengthPct: Float = 1.372F,
+    outerLengthPct: Float = 1.3F,
     innerLengthPct: Float = 1F,
-    extThicknessVertPct: Float = 0.25F,
-    extThicknessHorizPct: Float = 0.75F
+    extThicknessVertPct: Float = 0.3125F,
+    extThicknessHorizPct: Float = 1 - extThicknessVertPct
 ): (idx: Int, leftTop: Boolean) -> HexagonalSegmentParams {
     val angled = HexagonalSegmentParams(
         outerLengthPct = outerLengthPct,

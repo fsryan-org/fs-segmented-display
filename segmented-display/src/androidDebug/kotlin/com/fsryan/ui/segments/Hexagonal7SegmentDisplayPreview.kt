@@ -43,7 +43,10 @@ fun EvenHexagonal7SegmentsAllHex() {
 @Composable
 @Preview(showBackground = true, widthDp = 1256, heightDp = 536)
 fun ClassicSymmetricHexagonal7SegmentsAllHex() {
-    val createHexagonalSegmentParams = HexagonalSegmentParams.classic7SymmetricParamsFun(outerLengthPct = 1.372F)
+    val createHexagonalSegmentParams = HexagonalSegmentParams.classic7SymmetricParamsFun(
+        outerLengthPct = 1.3F,
+        extThicknessVertPct = 0.3125F
+    )
     Column {
         Box(modifier = Modifier.height(179.dp)) {
             Hexagonal7SegmentDisplay(
