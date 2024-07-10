@@ -30,23 +30,11 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     iosX64()
-    
-    sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-        }
 
-        androidMain {
-            this@androidMain.resources
-        }
+    sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
             implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
         }
     }
 }
