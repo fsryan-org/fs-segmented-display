@@ -67,6 +67,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = false
     }
     dependencies {
         debugImplementation(compose.uiTooling)
