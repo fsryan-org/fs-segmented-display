@@ -8,8 +8,11 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 
 fun DrawScope.drawRect7SegmentChar(
+    activatedSegments: Int,
     width: Float,
     height: Float,
+    activatedColor: Color,
+    deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = true
 ) {
 
@@ -40,45 +43,47 @@ fun DrawScope.drawRect7SegmentChar(
     val bottomVerticalSegmentHeight = bottomVerticalSegmentEndY - bottomVerticalSegmentStartY
     val rightVerticalSegmentStartX = leftmostX + drawableWidth - actualThickness
 
+    val activatedBrush = SolidColor(activatedColor)
+    val deactivatedBrush = SolidColor(deactivatedColor)
     // top horizontal segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = if (activatedSegments and 0b1 != 0) activatedBrush else deactivatedBrush,
         topLeft = Offset(x = horizonalSegmentStartX, y = topY),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
     )
     // middle horizontal segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = if (activatedSegments and 0b1000 != 0) activatedBrush else deactivatedBrush,
         topLeft = Offset(x = horizonalSegmentStartX, y = centerY - actualThickness / 2),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
     )
     // bottom horizontal segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = if (activatedSegments and 0b1000000 != 0) activatedBrush else deactivatedBrush,
         topLeft = Offset(x = horizonalSegmentStartX, y = topY + drawableHeight - actualThickness),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
     )
     // top-left vertical segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = SolidColor(if (activatedSegments and 0b10 != 0) activatedColor else deactivatedColor),
         topLeft = Offset(x = leftmostX, y = topVerticalSegmentStartY),
         size = Size(width = actualThickness, height = topVerticalSegmentHeight)
     )
     // top-right vertical segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = SolidColor(if (activatedSegments and 0b100 != 0) activatedColor else deactivatedColor),
         topLeft = Offset(x = rightVerticalSegmentStartX, y = topVerticalSegmentStartY),
         size = Size(width = actualThickness, height = topVerticalSegmentHeight)
     )
     // bottom-left vertical segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = SolidColor(if (activatedSegments and 0b10000 != 0) activatedColor else deactivatedColor),
         topLeft = Offset(x = leftmostX, y = bottomVerticalSegmentStartY),
         size = Size(width = actualThickness, height = bottomVerticalSegmentHeight)
     )
     // bottom-right vertical segment
     drawRect(
-        brush = SolidColor(Color.Black),
+        brush = SolidColor(if (activatedSegments and 0b100000 != 0) activatedColor else deactivatedColor),
         topLeft = Offset(x = rightVerticalSegmentStartX, y = bottomVerticalSegmentStartY),
         size = Size(width = actualThickness, height = bottomVerticalSegmentHeight)
     )
