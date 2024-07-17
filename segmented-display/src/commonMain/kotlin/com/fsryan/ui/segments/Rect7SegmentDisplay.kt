@@ -32,25 +32,55 @@ fun DrawScope.drawRect7SegmentChar(
     val horizontalSegmentLength = drawableWidth - gapSize - 2 * actualThickness
     val horizonalSegmentStartX = leftmostX + actualThickness + halfGapSize
 
+    val topVerticalSegmentStartY = topY + actualThickness + halfGapSize
+    val topVerticalSegmentEndY = centerY - actualThickness / 2 - halfGapSize
+    val topVerticalSegmentHeight = topVerticalSegmentEndY - topVerticalSegmentStartY
+    val bottomVerticalSegmentStartY = centerY + actualThickness / 2 + halfGapSize
+    val bottomVerticalSegmentEndY = topY + drawableHeight - actualThickness - halfGapSize
+    val bottomVerticalSegmentHeight = bottomVerticalSegmentEndY - bottomVerticalSegmentStartY
+    val rightVerticalSegmentStartX = leftmostX + drawableWidth - actualThickness
+
     // top horizontal segment
     drawRect(
         brush = SolidColor(Color.Black),
         topLeft = Offset(x = horizonalSegmentStartX, y = topY),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
     )
-
     // middle horizontal segment
     drawRect(
         brush = SolidColor(Color.Black),
         topLeft = Offset(x = horizonalSegmentStartX, y = centerY - actualThickness / 2),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
     )
-
     // bottom horizontal segment
     drawRect(
         brush = SolidColor(Color.Black),
         topLeft = Offset(x = horizonalSegmentStartX, y = topY + drawableHeight - actualThickness),
         size = Size(width = horizontalSegmentLength, height = actualThickness)
+    )
+    // top-left vertical segment
+    drawRect(
+        brush = SolidColor(Color.Black),
+        topLeft = Offset(x = leftmostX, y = topVerticalSegmentStartY),
+        size = Size(width = actualThickness, height = topVerticalSegmentHeight)
+    )
+    // top-right vertical segment
+    drawRect(
+        brush = SolidColor(Color.Black),
+        topLeft = Offset(x = rightVerticalSegmentStartX, y = topVerticalSegmentStartY),
+        size = Size(width = actualThickness, height = topVerticalSegmentHeight)
+    )
+    // bottom-left vertical segment
+    drawRect(
+        brush = SolidColor(Color.Black),
+        topLeft = Offset(x = leftmostX, y = bottomVerticalSegmentStartY),
+        size = Size(width = actualThickness, height = bottomVerticalSegmentHeight)
+    )
+    // bottom-right vertical segment
+    drawRect(
+        brush = SolidColor(Color.Black),
+        topLeft = Offset(x = rightVerticalSegmentStartX, y = bottomVerticalSegmentStartY),
+        size = Size(width = actualThickness, height = bottomVerticalSegmentHeight)
     )
 
     // debugging
