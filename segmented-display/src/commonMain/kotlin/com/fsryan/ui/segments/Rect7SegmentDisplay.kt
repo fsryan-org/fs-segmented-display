@@ -11,6 +11,8 @@ fun DrawScope.drawRect7SegmentChar(
     activatedSegments: Int,
     width: Float,
     height: Float,
+    topLeftPadding: Offset,
+    bottomRightPadding: Offset,
     activatedColor: Color,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = true
@@ -20,10 +22,10 @@ fun DrawScope.drawRect7SegmentChar(
 
     // Here we define some important values that serve as anchor points and
     // sizes that can be referenced to draw correctly
-    val leftmostX = origin.x
-    val topY = origin.y
-    val drawableWidth = width
-    val drawableHeight = height
+    val leftmostX = origin.x + topLeftPadding.x
+    val topY = origin.y + topLeftPadding.y
+    val drawableWidth = width - topLeftPadding.x - bottomRightPadding.x
+    val drawableHeight = height - topLeftPadding.y - bottomRightPadding.y
     val centerX = leftmostX + drawableWidth / 2
     val centerY = topY + drawableHeight / 2
 
@@ -90,6 +92,13 @@ fun DrawScope.drawRect7SegmentChar(
 
     // debugging
     if (debuggingEnabled) {
+        // Allocated Area
+        drawRect(
+            brush = SolidColor(Color.Red),
+            topLeft = Offset(x = 0F, y = 0F),
+            size = Size(width = width, height = height),
+            style = Stroke(width = Stroke.HairlineWidth)
+        )
         // Drawable Area
         drawRect(
             brush = SolidColor(Color.Red),
