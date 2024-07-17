@@ -2,9 +2,14 @@ package com.fsryan.ui.segments
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -78,6 +83,44 @@ fun RenderACircle() {
             color = Color.Yellow,
             center = Offset(x = size.width / 2, y = size.height / 2),
             radius = size.width / 3
+        )
+    }
+}
+
+@Preview
+@Composable
+fun RenderARegularPentagon() {
+    Canvas(
+        modifier = Modifier.width(50.dp).height(100.dp)
+    ) {
+        // https://en.wikipedia.org/wiki/Regular_polygon#Cartesian_coordinates
+        val radius = size.width / 3
+        val centerX = size.width / 2
+        val centerY = size.height / 2
+        val points = (0..4).map { idx ->
+            // All the points of a regular polygon lie on a circle. The number
+            // of points is the number of sides of the polygon. Each point is
+            // equally-spaced along the circle. Thus, the x value will always
+            // be cos(angle) * radius plus the center X and the y value will
+            // always be sin(angle) * radius plus the center Y.
+            val angle = PI * 2 / 5 * idx    // in radians.
+            Offset(
+                x = centerX + radius * cos(angle).toFloat(),
+                y = centerY + radius * sin(angle).toFloat()
+            )
+        }
+        drawPath(
+            path = Path().apply {
+                points.forEachIndexed { idx, point ->
+                    if (idx == 0) {
+                        moveTo(point.x, point.y)
+                    } else {
+                        lineTo(point.x, point.y)
+                    }
+                }
+                close()
+            },
+            color = Color.Cyan
         )
     }
 }
