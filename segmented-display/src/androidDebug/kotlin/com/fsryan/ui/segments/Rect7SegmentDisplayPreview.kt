@@ -31,6 +31,7 @@ fun DrawRect7SegmentChar() {
                 .height(400.dp)
         ) {
             drawRect7SegmentChar(
+                origin = Offset(x = 0F, y = 0F),
                 activatedSegments = activatedSegments,
                 width = size.width,
                 height = size.height,

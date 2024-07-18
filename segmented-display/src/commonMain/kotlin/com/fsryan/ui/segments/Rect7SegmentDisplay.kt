@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 
 fun DrawScope.drawRect7SegmentChar(
+    origin: Offset,
     activatedSegments: Int,
     width: Float,
     height: Float,
@@ -20,9 +21,6 @@ fun DrawScope.drawRect7SegmentChar(
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = true
 ) {
-
-    val origin = Offset(x = 0F, y = 0F)
-
     // Here we define some important values that serve as anchor points and
     // sizes that can be referenced to draw correctly
     val leftmostX = origin.x + topLeftPadding.x
