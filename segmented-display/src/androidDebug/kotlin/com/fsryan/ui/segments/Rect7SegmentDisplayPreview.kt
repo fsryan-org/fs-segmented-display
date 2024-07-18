@@ -62,3 +62,27 @@ fun DrawRect7SegmentChar() {
         }
     }
 }
+
+@Preview(widthDp = 800)
+@Composable
+fun RectangularHexCharacters() {
+    Column {
+        Rect7SegmentDisplay(
+            modifier = Modifier.background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            text = "01234567",
+            thicknessMultiplier = 0.6F,
+            activatedColor = Color.Black
+        )
+        Rect7SegmentDisplay(
+            modifier = Modifier.background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            thicknessMultiplier = 0.6F,
+            gapSizeMultiplier = 0.75F,
+            text = "89ABCDEF",
+            activatedColor = Color.Black
+        )
+    }
+}

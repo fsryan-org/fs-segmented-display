@@ -1,11 +1,57 @@
 package com.fsryan.ui.segments
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun Rect7SegmentDisplay(
+    modifier: Modifier = Modifier,
+    text: String,
+    paddingValues: PaddingValues = PaddingValues(4.dp),
+    topAreaPercentage: Float = 0.495F,
+    thicknessMultiplier: Float = 1F,
+    gapSizeMultiplier: Float = 1F,
+    activatedColor: Color = Color.Black,
+    deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    charToActivatedSegments: (Char) -> Int = ::transformCharToActiveSegments
+) {
+    val density = LocalDensity.current.density
+    val layoutDirection = LocalLayoutDirection.current
+    val topLeftPadding = Offset(
+        x = paddingValues.calculateLeftPadding(layoutDirection).value * density,
+        y = paddingValues.calculateTopPadding().value * density
+    )
+    val bottomRightPadding = Offset(
+        x = paddingValues.calculateRightPadding(layoutDirection).value * density,
+        y = paddingValues.calculateBottomPadding().value * density
+    )
+    SingleLineSegmentedDisplay(modifier = modifier, text = text) { _, char, origin, charWidth, charHeight ->
+        drawRect7SegmentChar(
+            activatedSegments = charToActivatedSegments(char),
+            origin = origin,
+            width = charWidth,
+            height = charHeight,
+            gapSizeMultiplier = gapSizeMultiplier,
+            topLeftPadding = topLeftPadding,
+            topAreaPercentage = topAreaPercentage,
+            bottomRightPadding = bottomRightPadding,
+            thicknessMultiplier = thicknessMultiplier,
+            activatedColor = activatedColor,
+            deactivatedColor = deactivatedColor,
+            debuggingEnabled = false
+        )
+    }
+}
 
 fun DrawScope.drawRect7SegmentChar(
     origin: Offset,
