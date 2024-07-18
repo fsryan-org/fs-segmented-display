@@ -36,6 +36,9 @@ fun DrawRect7SegmentChar() {
                 height = size.height,
                 topLeftPadding = Offset(x = 40F, y = 40F),
                 bottomRightPadding = Offset(x = 40F, y = 40F),
+                topAreaPercentage = 0.40F,
+                thicknessMultiplier = 0.5F,
+                gapSizeMultiplier = 4F,
                 activatedColor = Color.Black
             )
         }

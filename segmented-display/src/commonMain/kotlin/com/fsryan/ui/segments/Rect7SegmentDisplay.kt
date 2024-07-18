@@ -13,6 +13,9 @@ fun DrawScope.drawRect7SegmentChar(
     height: Float,
     topLeftPadding: Offset,
     bottomRightPadding: Offset,
+    topAreaPercentage: Float,
+    thicknessMultiplier: Float,
+    gapSizeMultiplier: Float,
     activatedColor: Color,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = true
@@ -27,10 +30,10 @@ fun DrawScope.drawRect7SegmentChar(
     val drawableWidth = width - topLeftPadding.x - bottomRightPadding.x
     val drawableHeight = height - topLeftPadding.y - bottomRightPadding.y
     val centerX = leftmostX + drawableWidth / 2
-    val centerY = topY + drawableHeight / 2
+    val centerY = topY + drawableHeight * topAreaPercentage
 
-    val configuredThickness = 29F / 240.37F * drawableHeight
-    val gapSize = configuredThickness / 10
+    val configuredThickness = 29F / 240.37F * drawableHeight * thicknessMultiplier
+    val gapSize = configuredThickness / 10 * gapSizeMultiplier
     val halfGapSize = gapSize / 2
     val actualThickness = configuredThickness - halfGapSize
 
@@ -117,6 +120,20 @@ fun DrawScope.drawRect7SegmentChar(
             brush = SolidColor(Color.Green),
             start = Offset(x = leftmostX, y = centerY),
             end = Offset(x = leftmostX + drawableWidth, y = centerY),
+        )
+        // Center line of the top area
+        val topAreaCenterLine = (topY + centerY + configuredThickness / 2) / 2
+        drawLine(
+            brush = SolidColor(Color.Green),
+            start = Offset(x = leftmostX, y = topAreaCenterLine),
+            end = Offset(x = leftmostX + drawableWidth, y = topAreaCenterLine),
+        )
+        // Center line of the bottom area
+        val bottomAreaCenterLine = (centerY + topY + drawableHeight - configuredThickness / 2) / 2
+        drawLine(
+            brush = SolidColor(Color.Green),
+            start = Offset(x = leftmostX, y = bottomAreaCenterLine),
+            end = Offset(x = leftmostX + drawableWidth, y = bottomAreaCenterLine),
         )
     }
 }
