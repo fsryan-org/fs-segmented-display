@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 @Preview
 @Composable
 fun DrawRect7SegmentChar() {
-    Column {
-        var activatedSegments by remember { mutableIntStateOf(0b01111111) }
+    SegmentActivator { activatedSegments ->
         Canvas(
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier
+                .width(200.dp)
                 .height(400.dp)
         ) {
             drawRect7SegmentChar(
@@ -43,23 +43,6 @@ fun DrawRect7SegmentChar() {
                 activatedColor = Color.Black
             )
         }
-        Row(
-            modifier = Modifier
-                .width(200.dp)
-                // rotating 180 degrees enables us to see the least significant bit on the RIGHT
-                .rotate(180F),
-            horizontalArrangement = Arrangement.spacedBy(1.dp)
-        ) {
-            for (i in 0 until 7) {
-                val activated = (activatedSegments and (1 shl i)) != 0
-                Box(
-                    modifier = Modifier.height(50.dp)
-                        .weight(1F)
-                        .background(if (activated) Color.Red else Color.Red.copy(alpha = 0.25F))
-                        .clickable { activatedSegments = activatedSegments xor (1 shl i) }
-                )
-            }
-        }
     }
 }
 
@@ -68,7 +51,8 @@ fun DrawRect7SegmentChar() {
 fun RectangularHexCharacters() {
     Column {
         Rect7SegmentDisplay(
-            modifier = Modifier.background(Color.LightGray)
+            modifier = Modifier
+                .background(Color.LightGray)
                 .width(800.dp)
                 .height(200.dp),
             text = "01234567",
@@ -76,7 +60,8 @@ fun RectangularHexCharacters() {
             activatedColor = Color.Black
         )
         Rect7SegmentDisplay(
-            modifier = Modifier.background(Color.LightGray)
+            modifier = Modifier
+                .background(Color.LightGray)
                 .width(800.dp)
                 .height(200.dp),
             thicknessMultiplier = 0.6F,
