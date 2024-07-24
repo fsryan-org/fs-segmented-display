@@ -40,9 +40,12 @@ interface AngledSegmentEnds {
     val outerEdgeRightArea: Float
 
     /**
-     * The percentage of the distance between between the outer left vertex of
-     * this segment and the outer right vertex of an adjacent segment that the
-     * line of intersection between two segments should be drawn.
+     * The percentage of the distance between the outer left vertex of this
+     * segment and the outer right vertex of an adjacent segment that the
+     * boundary between two segments should be drawn. The best way to
+     * understand the `leftIntersectionPct` is to imagine the segment without
+     * gaps. In the no-gaps case, this is the line where this segment starts
+     * and the adjacent segment ends.
      *
      * > *Note*: This value should be between 0 and 1
      *
@@ -53,9 +56,12 @@ interface AngledSegmentEnds {
     val leftIntersectionPct: Float
 
     /**
-     * The percentage of the distance between between the outer right vertex of
-     * this segment and the outer left vertex of an adjacent segment that the
-     * line of intersection between two segments should be drawn.
+     * The percentage of the distance between the outer right vertex of this
+     * segment and the outer left vertex of an adjacent segment that the
+     * line of intersection between two segments should be drawn. The best way
+     * to understand the `rightIntersectionPct` is to imagine the segment
+     * without gaps. In the no-gaps case, this is the line where this segment
+     * ends and the adjacent segment starts.
      *
      * > *Note*: This value should be between 0 and 1
      *
@@ -77,10 +83,6 @@ interface AngledSegmentEnds {
         )
     }
 }
-
-
-
-
 
 @JsName("createAngledSegmentEnd")
 fun AngledSegmentEnds(

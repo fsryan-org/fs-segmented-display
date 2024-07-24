@@ -81,11 +81,9 @@ fun DrawScope.drawClassic7SegmentChar(
 
     val thickness = 29F / 240.37F * drawableHeight * thicknessMultiplier
     val gapSize = thickness / 10 * gapSizeMultiplier
-    val gapOffset = gapSize / 2
 
-    val baseHorizontalSegmentLength = drawableWidth - 2 * thickness
     val baseHorizontalSegmentLeftX = leftmostX + thickness
-    val baseHorizontalSegmentRightX = baseHorizontalSegmentLeftX + baseHorizontalSegmentLength
+    val baseHorizontalSegmentRightX = baseHorizontalSegmentLeftX + drawableWidth - 2 * thickness
 
     val middleHorizontalSegmentTopY = centerY - thickness / 2
     val middleHorizontalSegmentBottomY = centerY + thickness / 2
@@ -100,7 +98,7 @@ fun DrawScope.drawClassic7SegmentChar(
 
     val leftVerticalSegmentRightX = baseHorizontalSegmentLeftX
     val rightVerticalSegmentLeftX = rightmostX - thickness
-    val rightVerticalSegmentEndX = rightmostX
+    val rightVerticalSegmentRightX = rightmostX
 
     // Outer segment dimensions
     val topHorizontalEnds = angledSegmentEndsOf(0)
@@ -136,7 +134,7 @@ fun DrawScope.drawClassic7SegmentChar(
 
     // Slopes for intersections
     val topLeftCornerSlope = slope(x1 = leftmostX, y1 = topLeftVerticalOuterEdgeTopY, x2 = topHorizontalOuterEdgeLeftX, y2 = topY)
-    val topRightCornerSlope = slope(x1 = topHorizontalOuterEdgeRightX, y1 = topY, x2 = rightVerticalSegmentEndX, y2 = topRightVerticalOuterEdgeTopY)
+    val topRightCornerSlope = slope(x1 = topHorizontalOuterEdgeRightX, y1 = topY, x2 = rightVerticalSegmentRightX, y2 = topRightVerticalOuterEdgeTopY)
     val middleRightUpperToLowerSlope = slope(x1 = middleHorizontalUpperEdgeRightX, y1 = middleHorizontalSegmentTopY, x2 = rightmostX, y2 = bottomRightVerticalOuterEdgeTopY)
     val middleRightLowerToUpperSlope = slope(x1 = rightVerticalSegmentLeftX, y1 = bottomRightVerticalInnerEdgeTopY, x2 = rightmostX, y2 = topRightVerticalOuterEdgeBottomY)
     val bottomRightCornerSlope = slope(x1 = bottomHorizontalOuterEdgeRightX, y1 = bottomHorizontalSegmentBottomY, x2 = rightmostX, y2 = bottomRightVerticalOuterEdgeBottomY)
@@ -149,21 +147,23 @@ fun DrawScope.drawClassic7SegmentChar(
         color = if (activatedSegments and 0b1 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
             val topHorizontalSegmentBottomY = topY + thickness
+            val leftGapOffset = topHorizontalEnds.horizLeftGapOffset(gapSize)
+            val rightGapOffset = topHorizontalEnds.horizRightGapOffset(gapSize)
 
-            moveTo(x = topHorizontalOuterEdgeLeftX + gapOffset, y = topY)
-            lineTo(x = topHorizontalOuterEdgeRightX - gapOffset, y = topY)
+            moveTo(x = topHorizontalOuterEdgeLeftX + leftGapOffset, y = topY)
+            lineTo(x = topHorizontalOuterEdgeRightX - rightGapOffset, y = topY)
 
             val remainingRightEndArea = rightmostX - topHorizontalOuterEdgeRightX
             val rightIntermediateX = topHorizontalOuterEdgeRightX + topHorizontalEnds.rightIntersectionPct * remainingRightEndArea
             val rightIntermediateY = topY + topRightCornerSlope * (rightIntermediateX - topHorizontalOuterEdgeRightX)
-            lineTo(x = rightIntermediateX - gapOffset, y = rightIntermediateY)
-            lineTo(x = topHorizontalEnds.horizInnerEdgeRightX(baseX = baseHorizontalSegmentRightX, thickness) - gapOffset, y = topHorizontalSegmentBottomY)
-            lineTo(x = topHorizontalEnds.horizInnerEdgeLeftX(baseX = baseHorizontalSegmentLeftX, thickness) + gapOffset, y = topHorizontalSegmentBottomY)
+            lineTo(x = rightIntermediateX - rightGapOffset, y = rightIntermediateY)
+            lineTo(x = topHorizontalEnds.horizInnerEdgeRightX(baseX = baseHorizontalSegmentRightX, thickness) - rightGapOffset, y = topHorizontalSegmentBottomY)
+            lineTo(x = topHorizontalEnds.horizInnerEdgeLeftX(baseX = baseHorizontalSegmentLeftX, thickness) + leftGapOffset, y = topHorizontalSegmentBottomY)
 
             val remainingLeftEndArea = topHorizontalOuterEdgeLeftX - leftmostX
             val leftIntermediateX = topHorizontalOuterEdgeLeftX - topHorizontalEnds.leftIntersectionPct * remainingLeftEndArea
             val leftIntermediateY = topY - topLeftCornerSlope * (topHorizontalOuterEdgeLeftX - leftIntermediateX)
-            lineTo(x = leftIntermediateX + gapOffset, y = leftIntermediateY)
+            lineTo(x = leftIntermediateX + leftGapOffset, y = leftIntermediateY)
             close()
         }
     )
@@ -172,30 +172,33 @@ fun DrawScope.drawClassic7SegmentChar(
         color = if (activatedSegments and 0b1000 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
             // This path could possibly be an octagon because of the way we're calculating the intersection points
-            moveTo(x = middleHorizontalUpperEdgeLeftX + gapOffset, y = middleHorizontalSegmentTopY)
-            lineTo(x = middleHorizontalUpperEdgeRightX - gapOffset, y = middleHorizontalSegmentTopY)
+            val leftGapOffset = middleHorizontalEnds.horizLeftGapOffset(gapSize)
+            val rightGapOffset = middleHorizontalEnds.horizRightGapOffset(gapSize)
+
+            moveTo(x = middleHorizontalUpperEdgeLeftX + leftGapOffset, y = middleHorizontalSegmentTopY)
+            lineTo(x = middleHorizontalUpperEdgeRightX - rightGapOffset, y = middleHorizontalSegmentTopY)
 
             val upperRemainingRightEndArea = rightmostX - middleHorizontalUpperEdgeRightX
             val upperRightIntermediateX = middleHorizontalUpperEdgeRightX + middleHorizontalEnds.rightIntersectionPct * upperRemainingRightEndArea
             val upperRightIntermediateY = middleHorizontalSegmentTopY + middleRightUpperToLowerSlope * (upperRightIntermediateX - middleHorizontalUpperEdgeRightX)
-            lineTo(x = upperRightIntermediateX - gapOffset, y = upperRightIntermediateY)
+            lineTo(x = upperRightIntermediateX - rightGapOffset, y = upperRightIntermediateY)
 
             val lowerRemainingRightEndArea = rightmostX - middleHorizontalLowerEdgeRightX
             val lowerRightIntermediateX = middleHorizontalLowerEdgeRightX + middleHorizontalEnds.rightIntersectionPct * lowerRemainingRightEndArea
             val lowerRightIntermediateY = middleHorizontalSegmentBottomY + middleRightLowerToUpperSlope * (lowerRightIntermediateX - middleHorizontalLowerEdgeRightX)
-            lineTo(x = lowerRightIntermediateX - gapOffset, y = lowerRightIntermediateY)
-            lineTo(x = middleHorizontalLowerEdgeRightX - gapOffset, y = middleHorizontalSegmentBottomY)
-            lineTo(x = middleHorizontalLowerEdgeLeftX + gapOffset, y = middleHorizontalSegmentBottomY)
+            lineTo(x = lowerRightIntermediateX - rightGapOffset, y = lowerRightIntermediateY)
+            lineTo(x = middleHorizontalLowerEdgeRightX - rightGapOffset, y = middleHorizontalSegmentBottomY)
+            lineTo(x = middleHorizontalLowerEdgeLeftX + leftGapOffset, y = middleHorizontalSegmentBottomY)
 
             val lowerRemainingLeftEndArea = middleHorizontalLowerEdgeLeftX - leftmostX
             val lowerLeftIntermediateX = middleHorizontalLowerEdgeLeftX - middleHorizontalEnds.leftIntersectionPct * lowerRemainingLeftEndArea
             val lowerLeftIntermediateY = middleHorizontalSegmentBottomY - middleLeftUpperToLowerSlope * (middleHorizontalLowerEdgeLeftX - lowerLeftIntermediateX)
-            lineTo(x = lowerLeftIntermediateX + gapOffset, y = lowerLeftIntermediateY)
+            lineTo(x = lowerLeftIntermediateX + leftGapOffset, y = lowerLeftIntermediateY)
 
             val upperRemainingLeftEndArea = middleHorizontalUpperEdgeLeftX - leftmostX
             val upperLeftIntermediateX = middleHorizontalUpperEdgeLeftX - middleHorizontalEnds.leftIntersectionPct * upperRemainingLeftEndArea
             val upperLeftIntermediateY = middleHorizontalSegmentTopY + middleLeftLowerToUpperSlope * (upperLeftIntermediateX - middleHorizontalUpperEdgeLeftX)
-            lineTo(x = upperLeftIntermediateX + gapOffset, y = upperLeftIntermediateY)
+            lineTo(x = upperLeftIntermediateX + leftGapOffset, y = upperLeftIntermediateY)
 
             close()
         }
@@ -204,20 +207,23 @@ fun DrawScope.drawClassic7SegmentChar(
     drawPath(
         color = if (activatedSegments and 0b1000000 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
-            moveTo(x = bottomHorizontalEnds.horizInnerEdgeLeftX(baseX = baseHorizontalSegmentLeftX, thickness) + gapOffset, y = bottomHorizontalSegmentTopY)
-            lineTo(x = bottomHorizontalEnds.horizInnerEdgeRightX(baseX = baseHorizontalSegmentRightX, thickness) - gapOffset, y = bottomHorizontalSegmentTopY)
+            val leftGapOffset = bottomHorizontalEnds.horizLeftGapOffset(gapSize)
+            val rightGapOffset = bottomHorizontalEnds.horizRightGapOffset(gapSize)
+
+            moveTo(x = bottomHorizontalEnds.horizInnerEdgeLeftX(baseX = baseHorizontalSegmentLeftX, thickness) + leftGapOffset, y = bottomHorizontalSegmentTopY)
+            lineTo(x = bottomHorizontalEnds.horizInnerEdgeRightX(baseX = baseHorizontalSegmentRightX, thickness) - rightGapOffset, y = bottomHorizontalSegmentTopY)
 
             val remainingRightEndArea = rightmostX - bottomHorizontalOuterEdgeRightX
             val rightIntermediateX = bottomHorizontalOuterEdgeRightX + bottomHorizontalEnds.rightIntersectionPct * remainingRightEndArea
             val rightIntermediateY = bottomHorizontalSegmentBottomY + bottomRightCornerSlope * (rightIntermediateX - bottomHorizontalOuterEdgeRightX)
-            lineTo(x = rightIntermediateX - gapOffset, y = rightIntermediateY)
-            lineTo(x = bottomHorizontalOuterEdgeRightX - gapOffset, y = bottomHorizontalSegmentBottomY)
-            lineTo(x = bottomHorizontalOuterEdgeLeftX + gapOffset, y = bottomHorizontalSegmentBottomY)
+            lineTo(x = rightIntermediateX - rightGapOffset, y = rightIntermediateY)
+            lineTo(x = bottomHorizontalOuterEdgeRightX - rightGapOffset, y = bottomHorizontalSegmentBottomY)
+            lineTo(x = bottomHorizontalOuterEdgeLeftX + leftGapOffset, y = bottomHorizontalSegmentBottomY)
 
             val remainingLeftEndArea = bottomHorizontalOuterEdgeLeftX - leftmostX
             val leftIntermediateX = bottomHorizontalOuterEdgeLeftX - bottomHorizontalEnds.leftIntersectionPct * remainingLeftEndArea
             val leftIntermediateY = bottomHorizontalSegmentBottomY - bottomLeftCornerSlope * (bottomHorizontalOuterEdgeLeftX - leftIntermediateX)
-            lineTo(x = leftIntermediateX + gapOffset, y = leftIntermediateY)
+            lineTo(x = leftIntermediateX + leftGapOffset, y = leftIntermediateY)
             close()
         }
     )
@@ -225,20 +231,22 @@ fun DrawScope.drawClassic7SegmentChar(
     drawPath(
         color = if (activatedSegments and 0b10 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
-            moveTo(x = leftmostX, y = topLeftVerticalOuterEdgeTopY + gapOffset)
+            val topGapOffset = topLeftVerticalEnds.leftVertTopGapOffset(gapSize)
+            val bottomGapOffset = topLeftVerticalEnds.leftVertBottomGapOffset(gapSize)
+            moveTo(x = leftmostX, y = topLeftVerticalOuterEdgeTopY + topGapOffset)
 
             val remainingTopEndArea = topLeftVerticalOuterEdgeTopY - topY
             val topIntermediateY = topLeftVerticalOuterEdgeTopY - topLeftVerticalEnds.rightIntersectionPct * remainingTopEndArea
             val topIntermediateX = leftmostX + 1 / topLeftCornerSlope * (topIntermediateY - topLeftVerticalOuterEdgeTopY)
-            lineTo(x = topIntermediateX, y = topIntermediateY + gapOffset)
-            lineTo(x = leftVerticalSegmentRightX, y = topLeftVerticalEnds.leftVertInnerEdgeTopY(baseY = baseTopVerticalSegmentTopY, thickness) + gapOffset)
-            lineTo(x = leftVerticalSegmentRightX, y = topLeftVerticalEnds.leftVertInnerEdgeBottomY(baseY = baseTopVerticalSegmentBottomY, thickness) - gapOffset)
+            lineTo(x = topIntermediateX, y = topIntermediateY + topGapOffset)
+            lineTo(x = leftVerticalSegmentRightX, y = topLeftVerticalEnds.leftVertInnerEdgeTopY(baseY = baseTopVerticalSegmentTopY, thickness) + topGapOffset)
+            lineTo(x = leftVerticalSegmentRightX, y = topLeftVerticalEnds.leftVertInnerEdgeBottomY(baseY = baseTopVerticalSegmentBottomY, thickness) - bottomGapOffset)
 
             val remainingBottomEndArea = middleHorizontalSegmentBottomY - topLeftVerticalOuterEdgeBottomY
             val bottomIntermediateY = topLeftVerticalOuterEdgeBottomY + topLeftVerticalEnds.leftIntersectionPct * remainingBottomEndArea
             val bottomIntermediateX = leftmostX + 1 / middleLeftUpperToLowerSlope * (bottomIntermediateY - topLeftVerticalOuterEdgeBottomY)
-            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - gapOffset)
-            lineTo(x = leftmostX, y = topLeftVerticalOuterEdgeBottomY - gapOffset)
+            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - bottomGapOffset)
+            lineTo(x = leftmostX, y = topLeftVerticalOuterEdgeBottomY - bottomGapOffset)
             close()
         }
     )
@@ -246,20 +254,23 @@ fun DrawScope.drawClassic7SegmentChar(
     drawPath(
         color = if (activatedSegments and 0b100 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
-            moveTo(x = rightVerticalSegmentLeftX, y = topRightVerticalEnds.rightVertInnerEdgeTopY(baseY = baseTopVerticalSegmentTopY, thickness) + gapOffset)
+            val topGapOffset = topRightVerticalEnds.rightVertTopGapOffset(gapSize)
+            val bottomGapOffset = topRightVerticalEnds.rightVertBottomGapOffset(gapSize)
+
+            moveTo(x = rightVerticalSegmentLeftX, y = topRightVerticalEnds.rightVertInnerEdgeTopY(baseY = baseTopVerticalSegmentTopY, thickness) + topGapOffset)
 
             val remainingTopEndArea = topRightVerticalOuterEdgeTopY - topY
             val topIntermediateY = topRightVerticalOuterEdgeTopY - topRightVerticalEnds.leftIntersectionPct * remainingTopEndArea
             val topIntermediateX = rightmostX - 1 / topRightCornerSlope * (topRightVerticalOuterEdgeTopY - topIntermediateY)
-            lineTo(x = topIntermediateX, y = topIntermediateY + gapOffset)
-            lineTo(x = rightmostX, y = topRightVerticalOuterEdgeTopY + gapOffset)
-            lineTo(x = rightmostX, y = topRightVerticalOuterEdgeBottomY - gapOffset)
+            lineTo(x = topIntermediateX, y = topIntermediateY + topGapOffset)
+            lineTo(x = rightmostX, y = topRightVerticalOuterEdgeTopY + topGapOffset)
+            lineTo(x = rightmostX, y = topRightVerticalOuterEdgeBottomY - bottomGapOffset)
 
             val remainingBottomEndArea = middleHorizontalSegmentBottomY - topRightVerticalOuterEdgeBottomY
             val bottomIntermediateY = topRightVerticalOuterEdgeBottomY + topRightVerticalEnds.rightIntersectionPct * remainingBottomEndArea
             val bottomIntermediateX = rightmostX - 1 / middleRightUpperToLowerSlope * (bottomIntermediateY - topRightVerticalOuterEdgeBottomY)
-            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - gapOffset)
-            lineTo(x = rightVerticalSegmentLeftX, y = topRightVerticalEnds.rightVertInnerEdgeBottomY(baseY = baseTopVerticalSegmentBottomY, thickness) - gapOffset)
+            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - bottomGapOffset)
+            lineTo(x = rightVerticalSegmentLeftX, y = topRightVerticalEnds.rightVertInnerEdgeBottomY(baseY = baseTopVerticalSegmentBottomY, thickness) - bottomGapOffset)
             close()
         }
     )
@@ -267,20 +278,23 @@ fun DrawScope.drawClassic7SegmentChar(
     drawPath(
         color = if (activatedSegments and 0b10000 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
-            moveTo(x = leftmostX, y = bottomLeftVerticalOuterEdgeTopY + gapOffset)
+            val topGapOffset = bottomLeftVerticalEnds.leftVertTopGapOffset(gapSize)
+            val bottomGapOffset = bottomLeftVerticalEnds.leftVertBottomGapOffset(gapSize)
+
+            moveTo(x = leftmostX, y = bottomLeftVerticalOuterEdgeTopY + topGapOffset)
 
             val remainingTopEndArea = bottomLeftVerticalOuterEdgeTopY - middleHorizontalSegmentTopY
             val topIntermediateY = bottomLeftVerticalOuterEdgeTopY - bottomLeftVerticalEnds.rightIntersectionPct * remainingTopEndArea
             val topIntermediateX = leftmostX + 1 / middleLeftLowerToUpperSlope * (topIntermediateY - bottomLeftVerticalOuterEdgeTopY)
-            lineTo(x = topIntermediateX, y = topIntermediateY + gapOffset)
-            lineTo(x = leftVerticalSegmentRightX, y = bottomLeftVerticalEnds.leftVertInnerEdgeTopY(baseY = baseBottomVerticalSegmentTopY, thickness) + gapOffset)
-            lineTo(x = leftVerticalSegmentRightX, y = bottomLeftVerticalEnds.leftVertInnerEdgeBottomY(baseY = baseBottomVerticalSegmentBottomY, thickness) - gapOffset)
+            lineTo(x = topIntermediateX, y = topIntermediateY + topGapOffset)
+            lineTo(x = leftVerticalSegmentRightX, y = bottomLeftVerticalEnds.leftVertInnerEdgeTopY(baseY = baseBottomVerticalSegmentTopY, thickness) + topGapOffset)
+            lineTo(x = leftVerticalSegmentRightX, y = bottomLeftVerticalEnds.leftVertInnerEdgeBottomY(baseY = baseBottomVerticalSegmentBottomY, thickness) - bottomGapOffset)
 
             val remainingBottomEndArea = bottomHorizontalSegmentBottomY - bottomLeftVerticalOuterEdgeBottomY
             val bottomIntermediateY = bottomLeftVerticalOuterEdgeBottomY + bottomLeftVerticalEnds.leftIntersectionPct * remainingBottomEndArea
             val bottomIntermediateX = leftmostX + 1 / bottomLeftCornerSlope * (bottomIntermediateY - bottomLeftVerticalOuterEdgeBottomY)
-            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - gapOffset)
-            lineTo(x = leftmostX, y = bottomLeftVerticalOuterEdgeBottomY - gapOffset)
+            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - bottomGapOffset)
+            lineTo(x = leftmostX, y = bottomLeftVerticalOuterEdgeBottomY - bottomGapOffset)
             close()
         }
     )
@@ -288,20 +302,23 @@ fun DrawScope.drawClassic7SegmentChar(
     drawPath(
         color = if (activatedSegments and 0b100000 != 0) activatedColor else deactivatedColor,
         path = Path().apply {
+            val topGapOffset = bottomRightEnds.rightVertTopGapOffset(gapSize)
+            val bottomGapOffset = bottomRightEnds.rightVertBottomGapOffset(gapSize)
+
+            moveTo(x = rightVerticalSegmentLeftX, y = bottomRightEnds.rightVertInnerEdgeTopY(baseY = baseBottomVerticalSegmentTopY, thickness) + topGapOffset)
+
             val remainingTopEndArea = bottomRightVerticalOuterEdgeTopY - middleHorizontalSegmentTopY
             val topIntermediateY = bottomRightVerticalOuterEdgeTopY - bottomRightEnds.leftIntersectionPct * remainingTopEndArea
             val topIntermediateX = rightmostX - 1 / middleRightLowerToUpperSlope * (topIntermediateY - bottomRightVerticalOuterEdgeTopY)
+            lineTo(x = topIntermediateX, y = topIntermediateY + topGapOffset)
+            lineTo(x = rightmostX, y = bottomRightVerticalOuterEdgeTopY + topGapOffset)
+            lineTo(x = rightmostX, y = bottomRightVerticalOuterEdgeBottomY - bottomGapOffset)
 
             val remainingBottomEndArea = bottomHorizontalSegmentBottomY - bottomRightVerticalOuterEdgeBottomY
             val bottomIntermediateY = bottomRightVerticalOuterEdgeBottomY + bottomRightEnds.rightIntersectionPct * remainingBottomEndArea
             val bottomIntermediateX = rightmostX - 1 / bottomRightCornerSlope * (bottomRightVerticalOuterEdgeBottomY - bottomIntermediateY)
-
-            moveTo(x = rightVerticalSegmentLeftX, y = bottomRightEnds.rightVertInnerEdgeTopY(baseY = baseBottomVerticalSegmentTopY, thickness) + gapOffset)
-            lineTo(x = topIntermediateX, y = topIntermediateY + gapOffset)
-            lineTo(x = rightmostX, y = bottomRightVerticalOuterEdgeTopY + gapOffset)
-            lineTo(x = rightmostX, y = bottomRightVerticalOuterEdgeBottomY - gapOffset)
-            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - gapOffset)
-            lineTo(x = rightVerticalSegmentLeftX, y = bottomRightEnds.rightVertInnerEdgeBottomY(baseY = baseBottomVerticalSegmentBottomY, thickness) - gapOffset)
+            lineTo(x = bottomIntermediateX, y = bottomIntermediateY - bottomGapOffset)
+            lineTo(x = rightVerticalSegmentLeftX, y = bottomRightEnds.rightVertInnerEdgeBottomY(baseY = baseBottomVerticalSegmentBottomY, thickness) - bottomGapOffset)
             close()
         }
     )
@@ -363,5 +380,12 @@ private fun AngledSegmentEnds.rightVertOuterEdgeTopY(baseY: Float, thickness: Fl
 private fun AngledSegmentEnds.rightVertOuterEdgeBottomY(baseY: Float, thickness: Float): Float = baseY + outerEdgeRightArea * thickness
 private fun AngledSegmentEnds.rightVertInnerEdgeTopY(baseY: Float, thickness: Float): Float = baseY - innerEdgeLeftArea * thickness
 private fun AngledSegmentEnds.rightVertInnerEdgeBottomY(baseY: Float, thickness: Float): Float = baseY + innerEdgeRightArea * thickness
+
+private fun AngledSegmentEnds.horizLeftGapOffset(gapSize: Float): Float = gapSize * (1 - leftIntersectionPct)
+private fun AngledSegmentEnds.horizRightGapOffset(gapSize: Float): Float = gapSize * (1 - rightIntersectionPct)
+private fun AngledSegmentEnds.leftVertTopGapOffset(gapSize: Float): Float = gapSize * (1 - rightIntersectionPct)
+private fun AngledSegmentEnds.leftVertBottomGapOffset(gapSize: Float): Float = gapSize * (1 - leftIntersectionPct)
+private fun AngledSegmentEnds.rightVertTopGapOffset(gapSize: Float): Float = gapSize * (1 - leftIntersectionPct)
+private fun AngledSegmentEnds.rightVertBottomGapOffset(gapSize: Float): Float = gapSize * (1 - rightIntersectionPct)
 
 internal fun slope(x1: Float, y1: Float, x2: Float, y2: Float): Float = (y2 - y1) / (x2 - x1)
