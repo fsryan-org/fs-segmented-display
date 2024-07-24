@@ -30,9 +30,9 @@ fun DrawClassic7SegmentChar() {
                 bottomRightPadding = Offset(x = 40F, y = 40F),
                 topAreaPercentage = 0.495F,
                 thicknessMultiplier = 1F,
-                gapSizeMultiplier = 4F,
+                gapSizeMultiplier = 2F,
                 activatedColor = Color.Black,
-                debuggingEnabled = true
+                debuggingEnabled = false
             ) { index ->
                 AngledSegmentEnds.EVEN
             }
