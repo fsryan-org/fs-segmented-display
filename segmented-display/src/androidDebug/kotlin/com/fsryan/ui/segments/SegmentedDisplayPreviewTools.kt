@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SegmentActivator(
     numSegments: Int = 7,
+    activatedSegments: MutableState<Int> = remember { mutableIntStateOf(0b01111111) },
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     content: @Composable (activatedSegments: Int) -> Unit
 ) {
@@ -37,8 +37,7 @@ fun SegmentActivator(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        var activatedSegments by remember { mutableIntStateOf(0b01111111) }
-        content(activatedSegments)
+        content(activatedSegments.value)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,7 +46,7 @@ fun SegmentActivator(
             horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             for (i in 0 until numSegments) {
-                val activated = (activatedSegments and (1 shl i)) != 0
+                val activated = (activatedSegments.value and (1 shl i)) != 0
                 val text = i.toString()
                 val measuredSize = textMeasurer.measure(text)
                 Box(
@@ -55,7 +54,7 @@ fun SegmentActivator(
                         .height(50.dp)
                         .weight(1F)
                         .background(if (activated) Color.Red else Color.Red.copy(alpha = 0.25F))
-                        .clickable { activatedSegments = activatedSegments xor (1 shl i) },
+                        .clickable { activatedSegments.value = activatedSegments.value xor (1 shl i) },
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(
