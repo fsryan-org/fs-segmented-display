@@ -24,6 +24,7 @@ fun Classic7SegmentDisplay(
     gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    debuggingEnabled: Boolean = false,
     angledSegmentEndsOf: (Int) -> AngledSegmentEnds = ::symmetricEvenAngledSegmentEnds,
     charToActivatedSegments: (Char) -> Int = ::transformCharToActiveSegments
 ) {
@@ -50,7 +51,7 @@ fun Classic7SegmentDisplay(
             thicknessMultiplier = thicknessMultiplier,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
-            debuggingEnabled = false,
+            debuggingEnabled = debuggingEnabled,
             angledSegmentEndsOf = angledSegmentEndsOf
         )
     }
