@@ -179,3 +179,98 @@ fun Classic7SegmentAsymmetricHexCharacters() {
         )
     }
 }
+
+// TODO: this is an 80's-looking, sharp-cornered display. It exposes a bug with
+//  the center segment in that the center segment doesn't reach all the way to
+//  the end. It also exposes an issue where, if you set the outer edge area to
+//  1F, the segment disappears.
+@Preview(widthDp = 800)
+@Composable
+fun Classic7SegmentSymmetricSharpAnglesHexCharacters() {
+    val angledSegmentEnds: (Int) -> AngledSegmentEnds = { index ->
+        when (index) {
+            0 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.99999F,
+                outerEdgeRightArea = 0.99999F,
+                leftIntersectionPct = 0.5F,
+                rightIntersectionPct = 0.5F
+            )
+            1 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.5F,
+                outerEdgeRightArea = 0.99999F,
+                leftIntersectionPct = 0F,
+                rightIntersectionPct = 0.5F
+            )
+            2 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.99999F,
+                outerEdgeRightArea = 0.5F,
+                leftIntersectionPct = 0.5F,
+                rightIntersectionPct = 0F
+            )
+            // TODO: the below creates a weird shape
+//            3 -> AngledSegmentEnds(
+//                innerEdgeLeftArea = 0F,
+//                innerEdgeRightArea = 0F,
+//                outerEdgeLeftArea = 0.99999F,
+//                outerEdgeRightArea = 0.99999F,
+//                leftIntersectionPct = 0.5F,
+//                rightIntersectionPct = 0.5F
+//            )
+            4 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.99999F,
+                outerEdgeRightArea = 0.5F,
+                leftIntersectionPct = 0.5F,
+                rightIntersectionPct = 0F
+            )
+            5 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.5F,
+                outerEdgeRightArea = 0.99999F,
+                leftIntersectionPct = 0F,
+                rightIntersectionPct = 0.5F
+            )
+            6 -> AngledSegmentEnds(
+                innerEdgeLeftArea = 0F,
+                innerEdgeRightArea = 0F,
+                outerEdgeLeftArea = 0.99999F,
+                outerEdgeRightArea = 0.99999F,
+                leftIntersectionPct = 0.5F,
+                rightIntersectionPct = 0.5F
+            )
+            else -> AngledSegmentEnds.EVEN
+        }
+    }
+    Column {
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            text = "01234567",
+            thicknessMultiplier = 1F,
+            gapSizeMultiplier = 2F,
+            activatedColor = Color.Red,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            thicknessMultiplier = 1F,
+            gapSizeMultiplier = 2F,
+            text = "89ABCDEF",
+            activatedColor = Color.Red,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
+    }
+}
