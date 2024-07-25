@@ -1,20 +1,27 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.fsryan.ui.segments.AngledSegmentEnds
 import com.fsryan.ui.segments.Classic7SegmentDisplay
 import com.fsryan.ui.segments.createSymmetricAngled7SegmentEndsFun
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.roundToInt
 
 @Composable
 @Preview
@@ -33,6 +40,7 @@ fun App() {
             val gapSizeMultiplierState = remember { mutableFloatStateOf(1F) }
             val activatedColorState = remember { mutableStateOf(Color.Red) }
             ShowDisplays(
+                modifier = Modifier.weight(1F),
                 gapSizeMultiplier = gapSizeMultiplierState.value,
                 angledSegmentEnds = angledSegmentEndsFunState.value.second,
                 topAreaPercentage = topAreaPercentageState.value,
@@ -40,12 +48,22 @@ fun App() {
                 thicknessMultiplier = thicknessMultiplierState.value,
                 debuggingEnabled = debuggingEnabledState.value
             )
+            ControlAssembly(
+                modifier = Modifier.weight(1F),
+                thicknessMultiplierState = thicknessMultiplierState,
+                gapSizeMultiplierState = gapSizeMultiplierState,
+                topAreaPercentageState = topAreaPercentageState,
+                activatedColorState = activatedColorState,
+                debuggingEnabledState = debuggingEnabledState,
+                angledSegmentEndsFunState = angledSegmentEndsFunState
+            )
         }
     }
 }
 
 @Composable
 fun ShowDisplays(
+    modifier: Modifier,
     gapSizeMultiplier: Float,
     angledSegmentEnds: (index: Int) -> AngledSegmentEnds,
     topAreaPercentage: Float,
@@ -53,7 +71,7 @@ fun ShowDisplays(
     thicknessMultiplier: Float,
     debuggingEnabled: Boolean
 ) {
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val width = maxWidth
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -85,4 +103,64 @@ fun ShowDisplays(
             )
         }
     }
+}
+
+@Composable
+fun ControlAssembly(
+    modifier: Modifier = Modifier,
+    thicknessMultiplierState: MutableFloatState,
+    gapSizeMultiplierState: MutableFloatState,
+    topAreaPercentageState: MutableFloatState,
+    activatedColorState: MutableState<Color>,
+    debuggingEnabledState: MutableState<Boolean>,
+    angledSegmentEndsFunState: MutableState<Pair<String, (Int) -> AngledSegmentEnds>>
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+            .padding(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        FloatValueSliderControl(
+            valueRange = 0F .. 1F,
+            steps = 1000,
+            state = topAreaPercentageState
+        ) { value ->
+            "Top Section: ${value.roundToDecimals(3) * 100}%"
+        }
+    }
+}
+
+@Composable
+fun FloatValueSliderControl(
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    state: MutableFloatState,
+    renderLabel: (value: Float) -> String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        var label by remember { mutableStateOf(renderLabel(state.value)) }
+        Text(modifier = Modifier.weight(1F), text = label)
+        Slider(
+            modifier = Modifier.weight(3F, fill = true),
+            value = state.value,
+            valueRange = valueRange,
+            onValueChange = { newValue ->
+                state.value = newValue
+            },
+            steps = steps,
+            onValueChangeFinished = {
+                label = renderLabel(state.value)
+            }
+        )
+    }
+}
+
+private fun Float.roundToDecimals(decimals: Int): Float {
+    var dotAt = 1
+    repeat(decimals) { dotAt *= 10 }
+    val roundedValue = (this * dotAt).roundToInt()
+    return (roundedValue / dotAt) + (roundedValue % dotAt).toFloat() / dotAt
 }
