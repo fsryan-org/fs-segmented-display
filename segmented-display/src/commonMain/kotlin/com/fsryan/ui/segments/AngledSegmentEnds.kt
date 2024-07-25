@@ -101,6 +101,103 @@ fun AngledSegmentEnds(
     rightIntersectionPct = rightIntersectionPct
 )
 
+fun symmetricEvenAngledSegmentEnds(index: Int): AngledSegmentEnds = AngledSegmentEnds.EVEN
+
+fun createSymmetricAngled7SegmentEndsFun(outerEdgeArea: Float = 0.33F): (Int) -> AngledSegmentEnds {
+    if (outerEdgeArea == 0F) {
+        return ::symmetricEvenAngledSegmentEnds
+    }
+
+    val topBottomHorizontal = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = outerEdgeArea,
+        outerEdgeRightArea = outerEdgeArea,
+        leftIntersectionPct = 0.5F,
+        rightIntersectionPct = 0.5F
+    )
+    val topLeftBottomRightVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = 0F,
+        outerEdgeRightArea = outerEdgeArea,
+        leftIntersectionPct = 0.5F,
+        rightIntersectionPct = 0.5F
+    )
+    val topRightBottomLeftVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = outerEdgeArea,
+        outerEdgeRightArea = 0F,
+        leftIntersectionPct = 0.5F,
+        rightIntersectionPct = 0.5F
+    )
+    return { index ->
+        when (index) {
+            0, 6 -> topBottomHorizontal
+            1, 5 -> topLeftBottomRightVertical
+            2, 4 -> topRightBottomLeftVertical
+            else -> AngledSegmentEnds.EVEN
+        }
+    }
+}
+
+fun createAsymmetricAngled7SegmentEndsFun(
+    outerEdgeArea: Float = 0.33F,
+    extremeIntersectionPct: Float = 1F
+): (Int) -> AngledSegmentEnds {
+    val topBottomHorizontal = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = outerEdgeArea,
+        outerEdgeRightArea = outerEdgeArea,
+        leftIntersectionPct = extremeIntersectionPct,
+        rightIntersectionPct = 1 - extremeIntersectionPct
+    )
+    val topLeftVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = 0F,
+        outerEdgeRightArea = outerEdgeArea,
+        leftIntersectionPct = 0.5F,
+        rightIntersectionPct = 1 - extremeIntersectionPct
+    )
+    val topRightVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = outerEdgeArea,
+        outerEdgeRightArea = 0F,
+        leftIntersectionPct = extremeIntersectionPct,
+        rightIntersectionPct = 0.5F
+    )
+    val bottomLeftVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = outerEdgeArea,
+        outerEdgeRightArea = 0F,
+        leftIntersectionPct = 1 - extremeIntersectionPct,
+        rightIntersectionPct = 0.5F
+    )
+    val bottomRightVertical = AngledSegmentEnds(
+        innerEdgeLeftArea = 0F,
+        innerEdgeRightArea = 0F,
+        outerEdgeLeftArea = 0F,
+        outerEdgeRightArea = outerEdgeArea,
+        leftIntersectionPct = 0.5F,
+        rightIntersectionPct = extremeIntersectionPct
+    )
+    return { index ->
+        when (index) {
+            0, 6 -> topBottomHorizontal
+            1 -> topLeftVertical
+            2 -> topRightVertical
+            4 -> bottomLeftVertical
+            5 -> bottomRightVertical
+            else -> AngledSegmentEnds.EVEN
+        }
+    }
+}
+
 private data class AngledSegmentEndsData(
     override val innerEdgeLeftArea: Float,
     override val innerEdgeRightArea: Float,

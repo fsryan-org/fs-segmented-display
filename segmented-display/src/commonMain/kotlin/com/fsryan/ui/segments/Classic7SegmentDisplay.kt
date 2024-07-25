@@ -67,7 +67,7 @@ fun DrawScope.drawClassic7SegmentChar(
     activatedColor: Color,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
     debuggingEnabled: Boolean = true,
-    angledSegmentEndsOf: (Int) -> AngledSegmentEnds = { AngledSegmentEnds.EVEN }
+    angledSegmentEndsOf: (Int) -> AngledSegmentEnds = ::symmetricEvenAngledSegmentEnds
 ) {
     // Here we define some important values that serve as anchor points and
     // sizes that can be referenced to draw correctly
