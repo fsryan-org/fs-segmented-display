@@ -24,6 +24,7 @@ fun Classic7SegmentDisplay(
     gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    angledSegmentEndsOf: (Int) -> AngledSegmentEnds = ::symmetricEvenAngledSegmentEnds,
     charToActivatedSegments: (Char) -> Int = ::transformCharToActiveSegments
 ) {
     val density = LocalDensity.current.density
@@ -49,7 +50,8 @@ fun Classic7SegmentDisplay(
             thicknessMultiplier = thicknessMultiplier,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
-            debuggingEnabled = false
+            debuggingEnabled = false,
+            angledSegmentEndsOf = angledSegmentEndsOf
         )
     }
 }

@@ -1,6 +1,8 @@
 package com.fsryan.ui.segments
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -88,5 +90,92 @@ fun DrawClassic7SegmentAsymmetricChar() {
                 angledSegmentEndsOf = createAsymmetricAngled7SegmentEndsFun()
             )
         }
+    }
+}
+
+@Preview(widthDp = 800)
+@Composable
+fun Classic7SegmentEvenHexCharacters() {
+    Column {
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            text = "01234567",
+            thicknessMultiplier = 1.2F,
+            gapSizeMultiplier = 2F,
+            activatedColor = Color.Black
+        )
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            thicknessMultiplier = 1.2F,
+            gapSizeMultiplier = 2F,
+            text = "89ABCDEF",
+            activatedColor = Color.Black
+        )
+    }
+}
+
+@Preview(widthDp = 800)
+@Composable
+fun Classic7SegmentSymmetricHexCharacters() {
+    val angledSegmentEnds = createSymmetricAngled7SegmentEndsFun(0.5F)
+    Column {
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            text = "01234567",
+            thicknessMultiplier = 1.2F,
+            gapSizeMultiplier = 2F,
+            activatedColor = Color.Black,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            thicknessMultiplier = 1.2F,
+            gapSizeMultiplier = 2F,
+            text = "89ABCDEF",
+            activatedColor = Color.Black,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
+    }
+}
+
+@Preview(widthDp = 800)
+@Composable
+fun Classic7SegmentAsymmetricHexCharacters() {
+    val angledSegmentEnds = createAsymmetricAngled7SegmentEndsFun()
+    Column {
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            text = "01234567",
+            thicknessMultiplier = 1.25F,
+            gapSizeMultiplier = 1F,
+            activatedColor = Color.Black,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
+        Classic7SegmentDisplay(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .width(800.dp)
+                .height(200.dp),
+            thicknessMultiplier = 1.25F,
+            gapSizeMultiplier = 1F,
+            text = "89ABCDEF",
+            activatedColor = Color.Black,
+            angledSegmentEndsOf = angledSegmentEnds
+        )
     }
 }
