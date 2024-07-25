@@ -10,9 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +27,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.fsryan.ui.segments.AngledSegmentEnds
 import com.fsryan.ui.segments.Classic7SegmentDisplay
+import com.fsryan.ui.segments.createAsymmetricAngled7SegmentEndsFun
 import com.fsryan.ui.segments.createSymmetricAngled7SegmentEndsFun
+import com.fsryan.ui.segments.symmetricEvenAngledSegmentEnds
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
 
@@ -123,6 +131,31 @@ fun ControlAssembly(
             .padding(all = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = {
+                    debuggingEnabledState.value = !debuggingEnabledState.value
+                }
+            ) {
+                Text("Debug Lines: ${if (debuggingEnabledState.value) "ON" else "OFF"}")
+            }
+            AngledSegmentEndsFunDropDown(angledSegmentEndsFunState)
+            Button(
+                onClick = {
+                    thicknessMultiplierState.value = 1F
+                    gapSizeMultiplierState.value = 1F
+                    topAreaPercentageState.value = .495F
+                    debuggingEnabledState.value = false
+                    angledSegmentEndsFunState.value = "Classic Symmetric" to createSymmetricAngled7SegmentEndsFun()
+                    activatedColorState.value = Color.Red
+                }
+            ) {
+                Text("Restore Defaults")
+            }
+        }
         ColorSliders(activatedColorState = activatedColorState)
         FloatValueSliderControl(
             valueRange = 0F .. 1F,
@@ -185,6 +218,54 @@ fun ColorSliders(activatedColorState: MutableState<Color>) {
         }
     }
     activatedColorState.value = Color(redState.value, greenState.value, blueState.value)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AngledSegmentEndsFunDropDown(
+    angledSegmentEndsState: MutableState<Pair<String, (Int) -> AngledSegmentEnds>>
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        modifier = Modifier,
+        expanded = isExpanded,
+        onExpandedChange = { newValue ->
+            isExpanded = newValue
+        }
+    ) {
+        TextField(
+            modifier = Modifier.menuAnchor(),
+            value = angledSegmentEndsState.value.first,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(isExpanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = {
+                isExpanded = false
+            }
+        ) {
+            sequenceOf(
+                "Classic Symmetric Uneven" to createSymmetricAngled7SegmentEndsFun(),
+                "Classic Symmetric Even" to ::symmetricEvenAngledSegmentEnds,
+                "Classic Asymmetric" to createAsymmetricAngled7SegmentEndsFun()
+            ).forEach { pair ->
+                DropdownMenuItem(
+                    text = {
+                        Text(pair.first)
+                    },
+                    onClick = {
+                        isExpanded = false
+                        angledSegmentEndsState.value = pair
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable
