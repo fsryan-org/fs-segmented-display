@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.fsryan.ui.segments.AngledSegmentEnds
 import com.fsryan.ui.segments.Classic7SegmentDisplay
@@ -40,7 +42,7 @@ fun App() {
             val gapSizeMultiplierState = remember { mutableFloatStateOf(1F) }
             val activatedColorState = remember { mutableStateOf(Color.Red) }
             ShowDisplays(
-                modifier = Modifier.weight(1F),
+                modifier = Modifier.weight(2F),
                 gapSizeMultiplier = gapSizeMultiplierState.value,
                 angledSegmentEnds = angledSegmentEndsFunState.value.second,
                 topAreaPercentage = topAreaPercentageState.value,
@@ -117,9 +119,11 @@ fun ControlAssembly(
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .padding(all = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        ColorSliders(activatedColorState = activatedColorState)
         FloatValueSliderControl(
             valueRange = 0F .. 1F,
             steps = 1000,
@@ -127,7 +131,60 @@ fun ControlAssembly(
         ) { value ->
             "Top Section: ${value.roundToDecimals(3) * 100}%"
         }
+        FloatValueSliderControl(
+            valueRange = 0F .. 2F,
+            steps = 2000,
+            state = thicknessMultiplierState
+        ) { value ->
+            "Thickness Multiplier: ${value.roundToDecimals(3)}"
+        }
+        FloatValueSliderControl(
+            valueRange = 0F .. 10F,
+            steps = 1000,
+            state = gapSizeMultiplierState
+        ) { value ->
+            "Gap Size Multiplier: ${value.roundToDecimals(3)}"
+        }
     }
+}
+
+@Composable
+fun ColorSliders(activatedColorState: MutableState<Color>) {
+    val redState = remember { mutableFloatStateOf(activatedColorState.value.red) }
+    val greenState = remember { mutableFloatStateOf(activatedColorState.value.green) }
+    val blueState = remember { mutableFloatStateOf(activatedColorState.value.blue) }
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+            .padding(all = 8.dp)
+    ) {
+        Text(
+            text = "Colors",
+            textDecoration = TextDecoration.Underline
+        )
+        FloatValueSliderControl(
+            valueRange = 0F .. 1F,
+            steps = 1000,
+            state = redState
+        ) { value ->
+            "Red: ${value.roundToDecimals(3)}"
+        }
+        FloatValueSliderControl(
+            valueRange = 0F .. 1F,
+            steps = 1000,
+            state = greenState
+        ) { value ->
+            "Green: ${value.roundToDecimals(3)}"
+        }
+        FloatValueSliderControl(
+            valueRange = 0F .. 1F,
+            steps = 1000,
+            state = blueState
+        ) { value ->
+            "Blue: ${value.roundToDecimals(3)}"
+        }
+    }
+    activatedColorState.value = Color(redState.value, greenState.value, blueState.value)
 }
 
 @Composable
