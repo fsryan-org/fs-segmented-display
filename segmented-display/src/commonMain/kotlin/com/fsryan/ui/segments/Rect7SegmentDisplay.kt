@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun Rect7SegmentDisplay(
     modifier: Modifier = Modifier,
     text: String,
+    shearPct: Float = 0F,
     paddingValues: PaddingValues = PaddingValues(4.dp),
     topAreaPercentage: Float = 0.495F,
     thicknessMultiplier: Float = 1F,
@@ -35,7 +36,7 @@ fun Rect7SegmentDisplay(
         x = paddingValues.calculateRightPadding(layoutDirection).value * density,
         y = paddingValues.calculateBottomPadding().value * density
     )
-    SingleLineSegmentedDisplay(modifier = modifier, text = text) { _, char, origin, charWidth, charHeight ->
+    SingleLineSegmentedDisplay(modifier = modifier, text = text, shearPct = shearPct) { _, char, origin, charWidth, charHeight ->
         drawRect7SegmentChar(
             activatedSegments = charToActivatedSegments(char),
             origin = origin,
