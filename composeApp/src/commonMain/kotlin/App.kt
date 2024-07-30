@@ -45,12 +45,14 @@ fun App() {
             val angledSegmentEndsFunState = remember {
                 mutableStateOf("Classic Symmetric" to createSymmetricAngled7SegmentEndsFun())
             }
+            val shearPctState = remember { mutableFloatStateOf(0F) }
             val thicknessMultiplierState = remember { mutableFloatStateOf(1F) }
             val topAreaPercentageState = remember { mutableFloatStateOf(0.495F) }
             val gapSizeMultiplierState = remember { mutableFloatStateOf(1F) }
             val activatedColorState = remember { mutableStateOf(Color.Red) }
             ShowDisplays(
                 modifier = Modifier.weight(2F),
+                shearPct = shearPctState.value,
                 gapSizeMultiplier = gapSizeMultiplierState.value,
                 angledSegmentEnds = angledSegmentEndsFunState.value.second,
                 topAreaPercentage = topAreaPercentageState.value,
@@ -60,6 +62,7 @@ fun App() {
             )
             ControlAssembly(
                 modifier = Modifier.weight(1F),
+                shearPctState = shearPctState,
                 thicknessMultiplierState = thicknessMultiplierState,
                 gapSizeMultiplierState = gapSizeMultiplierState,
                 topAreaPercentageState = topAreaPercentageState,
@@ -75,6 +78,7 @@ fun App() {
 fun ShowDisplays(
     modifier: Modifier,
     gapSizeMultiplier: Float,
+    shearPct: Float,
     angledSegmentEnds: (index: Int) -> AngledSegmentEnds,
     topAreaPercentage: Float,
     activatedColor: Color,
@@ -93,6 +97,7 @@ fun ShowDisplays(
                 // aspect ratio of each character is 1:2
                 modifier = Modifier.fillMaxWidth().height(width / 4),
                 text = "01234567",
+                shearPct = shearPct,
                 topAreaPercentage = topAreaPercentage,
                 thicknessMultiplier = thicknessMultiplier,
                 gapSizeMultiplier = gapSizeMultiplier,
@@ -103,10 +108,11 @@ fun ShowDisplays(
             Classic7SegmentDisplay(
                 // aspect ratio of each character is 1:2
                 modifier = Modifier.fillMaxWidth().height(width / 4),
+                text = "89ABCDEF",
+                shearPct = shearPct,
                 topAreaPercentage = topAreaPercentage,
                 thicknessMultiplier = thicknessMultiplier,
                 gapSizeMultiplier = gapSizeMultiplier,
-                text = "89ABCDEF",
                 activatedColor = activatedColor,
                 debuggingEnabled = debuggingEnabled,
                 angledSegmentEndsOf = angledSegmentEnds
@@ -118,6 +124,7 @@ fun ShowDisplays(
 @Composable
 fun ControlAssembly(
     modifier: Modifier = Modifier,
+    shearPctState: MutableFloatState,
     thicknessMultiplierState: MutableFloatState,
     gapSizeMultiplierState: MutableFloatState,
     topAreaPercentageState: MutableFloatState,
@@ -155,6 +162,13 @@ fun ControlAssembly(
             ) {
                 Text("Restore Defaults")
             }
+        }
+        FloatValueSliderControl(
+            valueRange = -1F .. 1F,
+            steps = 2000,
+            state = shearPctState
+        ) { value ->
+            "Shear: ${value.roundToDecimals(3) * 100}%"
         }
         ColorSliders(activatedColorState = activatedColorState)
         FloatValueSliderControl(
