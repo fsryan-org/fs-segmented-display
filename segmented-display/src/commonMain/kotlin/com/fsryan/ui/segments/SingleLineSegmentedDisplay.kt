@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlin.math.abs
-import kotlin.math.sign
 
 @Composable
 fun SingleLineSegmentedDisplay(
@@ -26,25 +25,14 @@ fun SingleLineSegmentedDisplay(
                 renderCharOnCanvas(idx, char, offset, charWidth, size.height)
             }
         } else {
+            val shearingMatrix = getOrCreateShearingMatrix(shearPct)
             val shearPx = abs(shearPct) * size.height
             withTransform(
                 transformBlock = {
-                    transform(
-                        matrix = Matrix(
-                            floatArrayOf(
-                                1F,     0F, 0F, 0F,
-                                -shearPct,  1F, 0F, 0F,
-                                0F,         0F, 1F, 0F,
-                                0F,    0F, 0F, 1F
-                            )
-                        )
-                    )
-                    inset(
-                        left = if (shearPct < 0) 0F else shearPx,
-                        top = 0F,
-                        right = if (shearPct < 0) shearPx else 0F,
-                        bottom = 0F
-                    )
+                    transform(shearingMatrix)
+                    val leftInset = if (shearPct < 0) 0F else shearPx
+                    val rightInset = if (shearPct < 0) shearPx else 0F
+                    inset(left = leftInset, top = 0F, right = rightInset, bottom = 0F)
                 }
             ) {
                 val charWidth = size.width / text.length
@@ -56,3 +44,24 @@ fun SingleLineSegmentedDisplay(
         }
     }
 }
+
+// access should be bound to a single thread
+private fun getOrCreateShearingMatrix(shearPct: Float): Matrix {
+    return shearingMatrixPool[shearPct] ?: Matrix(
+        floatArrayOf(
+            1F,         0F, 0F, 0F,
+            -shearPct,  1F, 0F, 0F,
+            0F,         0F, 1F, 0F,
+            0F,         0F, 0F, 1F
+        )
+    ).also {
+        shearingMatrixPool[shearPct] = it
+        shearingMatrixKeyList.add(shearPct)
+        while (shearingMatrixKeyList.size > 10) {
+            val toRemove = shearingMatrixKeyList.removeFirst()
+            shearingMatrixPool.remove(toRemove)
+        }
+    }
+}
+private val shearingMatrixKeyList = mutableListOf<Float>()
+private val shearingMatrixPool = mutableMapOf<Float, Matrix>()

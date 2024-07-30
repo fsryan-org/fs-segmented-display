@@ -19,7 +19,7 @@ fun Classic7SegmentAsymmetricHexCharactersSheared() {
             .width(800.dp)
             .height(200.dp),
         text = "89ABCDE8",
-        shearPct = -0.5F,
+        shearPct = 0.5F,
         thicknessMultiplier = 0.75F,
         gapSizeMultiplier = 2F,
         activatedColor = Color.Black,
