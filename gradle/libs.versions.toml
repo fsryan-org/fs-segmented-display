@@ -11,6 +11,7 @@ androidx-espresso-core = "3.6.0"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.0"
 compose-plugin = "1.6.11"
+dokka = "1.9.20"
 junit = "4.13.2"
 kotlin = "2.0.0"
 
@@ -29,6 +30,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
