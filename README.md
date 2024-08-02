@@ -1,21 +1,19 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop.
+# fs-segmented display
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+![Segmented Display](docs/images/readme_headline.png)
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Segmented displays are ubiquitous in the world of electronics. They are used in everything from digital clocks to thermostats to calculators to microwave ovens. This library provides a Composable function that can be used to create and style a segmented display in your Compose Multiplatform application.
 
+## Supported Platforms
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+Because this library is a [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) library, the following platforms are supported:
+* Android
+* iOS
+* Desktop (via JVM)
+* Web (via WASM)
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
+## Project Structure
 
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+There are two modules in this project:
+* [segmented-display](segmented-display/README.md), the library module that you can depend upon in your Compose Multiplatform project
+* [composeApp](composeApp/README.md), a demo application that shows the main library features
