@@ -1,4 +1,9 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.dokka.DokkaConfiguration.Visibility
+import org.jetbrains.dokka.gradle.DokkaTask
+//import org.jetbrains.dokka.base.DokkaBase
+//import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.Platform
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -75,14 +80,21 @@ android {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "MainKt"
+tasks.withType<DokkaTask> {
+    moduleName.set("fs-segmented-display")
 
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.fsryan.ui"
-            packageVersion = "1.0.0"
-        }
+    val dokkaBaseConfiguration = """
+    {
+      "customAssets": ["${rootProject.file("docs/images/readme_headline.png")}"],
+      "customStyleSheets": [],
+      "footerMessage": "(c) 2024 FS Ryan Software"
+    }
+    """
+    pluginsMapConfiguration.set(
+        mapOf("org.jetbrains.dokka.base.DokkaBase" to dokkaBaseConfiguration)
+    )
+    dokkaSourceSets.configureEach {
+        reportUndocumented.set(true)
+        includes.from("MODULE.md")
     }
 }
