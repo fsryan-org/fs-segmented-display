@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 @Preview(widthDp = 800)
 @Composable
-fun Classic7SegmentAsymmetricHexCharactersSheared() {
+internal fun Classic7SegmentAsymmetricHexCharactersSheared() {
     val angledSegmentEnds = createAsymmetricAngled7SegmentEndsFun()
     Classic7SegmentDisplay(
         modifier = Modifier

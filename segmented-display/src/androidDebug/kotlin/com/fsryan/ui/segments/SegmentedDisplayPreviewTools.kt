@@ -26,7 +26,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SegmentActivator(
+internal fun SegmentActivator(
     numSegments: Int = 7,
     activatedSegments: MutableState<Int> = remember { mutableIntStateOf(0b01111111) },
     textMeasurer: TextMeasurer = rememberTextMeasurer(),

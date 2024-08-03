@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 
 @Preview(widthDp = 800)
 @Composable
-fun Rect7SegmentAsymmetricHexCharactersSheared() {
+internal fun Rect7SegmentAsymmetricHexCharactersSheared() {
     Rect7SegmentDisplay(
         modifier = Modifier
             .background(Color.LightGray)

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview(showBackground = true)
-fun DrawClassic7SegmentEvenChar() {
+internal fun DrawClassic7SegmentEvenChar() {
     SegmentActivator { activatedSegments ->
         Canvas(
             modifier = Modifier
@@ -41,7 +41,7 @@ fun DrawClassic7SegmentEvenChar() {
 
 @Composable
 @Preview(showBackground = true)
-fun DrawClassic7SegmentSymmetricChar() {
+internal fun DrawClassic7SegmentSymmetricChar() {
     SegmentActivator { activatedSegments ->
         Canvas(
             modifier = Modifier
@@ -68,7 +68,7 @@ fun DrawClassic7SegmentSymmetricChar() {
 
 @Composable
 @Preview(showBackground = true)
-fun DrawClassic7SegmentAsymmetricChar() {
+internal fun DrawClassic7SegmentAsymmetricChar() {
     SegmentActivator { activatedSegments ->
         Canvas(
             modifier = Modifier
@@ -95,7 +95,7 @@ fun DrawClassic7SegmentAsymmetricChar() {
 
 @Preview(widthDp = 800)
 @Composable
-fun Classic7SegmentEvenHexCharacters() {
+internal fun Classic7SegmentEvenHexCharacters() {
     Column {
         Classic7SegmentDisplay(
             modifier = Modifier
@@ -122,7 +122,7 @@ fun Classic7SegmentEvenHexCharacters() {
 
 @Preview(widthDp = 800)
 @Composable
-fun Classic7SegmentSymmetricHexCharacters() {
+internal fun Classic7SegmentSymmetricHexCharacters() {
     val angledSegmentEnds = createSymmetricAngled7SegmentEndsFun(0.5F)
     Column {
         Classic7SegmentDisplay(
@@ -152,7 +152,7 @@ fun Classic7SegmentSymmetricHexCharacters() {
 
 @Preview(widthDp = 800)
 @Composable
-fun Classic7SegmentAsymmetricHexCharacters() {
+internal fun Classic7SegmentAsymmetricHexCharacters() {
     val angledSegmentEnds = createAsymmetricAngled7SegmentEndsFun()
     Column {
         Classic7SegmentDisplay(
@@ -186,7 +186,7 @@ fun Classic7SegmentAsymmetricHexCharacters() {
 //  1F, the segment disappears.
 @Preview(widthDp = 800)
 @Composable
-fun Classic7SegmentSymmetricSharpAnglesHexCharacters() {
+internal fun Classic7SegmentSymmetricSharpAnglesHexCharacters() {
     val angledSegmentEnds: (Int) -> AngledSegmentEnds = { index ->
         when (index) {
             0 -> AngledSegmentEnds(

@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 @Preview
 @Composable
-fun RenderACanvas() {
+internal fun RenderACanvas() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -43,7 +43,7 @@ fun RenderACanvas() {
 
 @Preview
 @Composable
-fun RenderAVerticalLine() {
+internal fun RenderAVerticalLine() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -59,7 +59,7 @@ fun RenderAVerticalLine() {
 
 @Preview
 @Composable
-fun RenderAHorizontalLine() {
+internal fun RenderAHorizontalLine() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -75,7 +75,7 @@ fun RenderAHorizontalLine() {
 
 @Preview
 @Composable
-fun RenderARectangle() {
+internal fun RenderARectangle() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -91,7 +91,7 @@ fun RenderARectangle() {
 
 @Preview
 @Composable
-fun RenderACircle() {
+internal fun RenderACircle() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -107,7 +107,7 @@ fun RenderACircle() {
 
 @Preview
 @Composable
-fun RenderARegularPentagon() {
+internal fun RenderARegularPentagon() {
     Canvas(
         modifier = Modifier
             .width(50.dp)
@@ -147,7 +147,7 @@ fun RenderARegularPentagon() {
 
 @Preview
 @Composable
-fun RenderARegularNGon() {
+internal fun RenderARegularNGon() {
     var sideCount by remember { mutableIntStateOf(5) }  // side count is the parameter
     val textMeasurer = rememberTextMeasurer()
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @Preview
 @Composable
-fun DrawRect7SegmentChar() {
+internal fun DrawRect7SegmentChar() {
     SegmentActivator { activatedSegments ->
         Canvas(
             modifier = Modifier
@@ -48,7 +48,7 @@ fun DrawRect7SegmentChar() {
 
 @Preview(widthDp = 800)
 @Composable
-fun RectangularHexCharacters() {
+internal fun RectangularHexCharacters() {
     Column {
         Rect7SegmentDisplay(
             modifier = Modifier
