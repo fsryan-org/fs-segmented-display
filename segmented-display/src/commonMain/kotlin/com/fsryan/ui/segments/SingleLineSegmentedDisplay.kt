@@ -10,6 +10,32 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import kotlin.math.abs
 
+/**
+ * A lower-level function that draws a single line of segmented characters on a
+ * [Canvas]. This function _DOES NOT_ handle conversion of the characters or
+ * how the individual characters should be drawn. Rather, it delegates the
+ * responsibility of drawing a single character to the [renderCharOnCanvas]
+ * function, providing the offset, width, and height of the character to be
+ * drawn.
+ *
+ * > *Note*:
+ * > You should use this function only when you have a custom function for
+ * > rendering characters on a [Canvas]. Do not use this function if you want
+ * > to render a [Rect7SegmentDisplay] or a [Classic7SegmentDisplay].
+ *
+ * @param modifier the [Modifier] applied to the [Canvas]
+ * @param text the [String] whose characters should be drawn
+ * @param shearPct serves to transform the x-axis as though it is skewed to the
+ * right/left as a percentage of the height. Thus, a value of 1 will skew the
+ * output to the right as much as the view is tall. A value of -1 will do the
+ * same, but will skew to the left instead of the right.
+ * @param renderCharOnCanvas the function responsible for actually drawing the
+ * characters on the canvas
+ *
+ * @see Rect7SegmentDisplay
+ * @see Classic7SegmentDisplay
+ * @author fsryan
+ */
 @Composable
 fun SingleLineSegmentedDisplay(
     modifier: Modifier = Modifier,

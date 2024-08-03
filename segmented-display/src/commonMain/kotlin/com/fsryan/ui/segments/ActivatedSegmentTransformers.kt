@@ -1,10 +1,31 @@
 package com.fsryan.ui.segments
 
 /**
- * A basic translation function that translates a character to the active segments.
+ * A basic transformation function that translates a character to the active
+ * segments that can be used for determining the segments of a 7-segment
+ * display that are active. The active segments are described withing the 7
+ * least significant bits of the returned integer and are mapped as follows
+ * (where the number shown be low is the index of the bit from least to most
+ * significant):
+ *
+ * ```
+ *  1111
+ * 2    3
+ * 2    3
+ * 2    3
+ *  4444
+ * 5    6
+ * 5    6
+ * 5    6
+ *  7777
+ * ```
+ *
+ * > *Note*:
+ * > If the character is not in 0-9a-zA-Z\-, then 0 will be returned
  *
  * @param char the character to translate
  * @return the active segments for the character
+ * @author fsryan
  */
 fun transformCharToActiveSegments(char: Char): Int = when (char) {
     '0' -> 0b01110111

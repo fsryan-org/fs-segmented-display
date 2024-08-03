@@ -13,6 +13,33 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 
+/**
+ * A composable function that draws a single line of segmented characters using
+ * the [drawRect7SegmentChar] function.
+ *
+ * @param modifier the [Modifier] passed to the [SingleLineSegmentedDisplay]
+ * @param text the [String] whose characters should be drawn
+ * @param shearPct serves to transform the x-axis as though it is skewed to the
+ * right/left as a percentage of the height. Thus, a value of 1 will skew the
+ * output to the right as much as the view is tall. A value of -1 will do the
+ * same, but will skew to the left instead of the right.
+ * @param paddingValues the [PaddingValues] to apply to each character drawn
+ * @param topAreaPercentage the percentage of the height of the character that
+ * should be considered the top area
+ * @param thicknessMultiplier a multiplier to apply to the thickness of the
+ * segments
+ * @param gapSizeMultiplier a multiplier to apply to the size of the gaps
+ * between segments
+ * @param activatedColor the [Color] to use for activated segments
+ * @param deactivatedColor the [Color] to use for deactivated segments
+ * @param debuggingEnabled whether or not to draw debugging information
+ * @param charToActivatedSegments a function that returns the activated segments
+ * for a given character.
+ *
+ * @see transformCharToActiveSegments for a diagram of the segment indices.
+ * @see Rect7SegmentDisplay for a rectangular version of a segmented display
+ * @author fsryan
+ */
 @Composable
 fun Rect7SegmentDisplay(
     modifier: Modifier = Modifier,
@@ -24,6 +51,7 @@ fun Rect7SegmentDisplay(
     gapSizeMultiplier: Float = 1F,
     activatedColor: Color = Color.Black,
     deactivatedColor: Color = activatedColor.copy(alpha = 0.05F),
+    debuggingEnabled: Boolean = false,
     charToActivatedSegments: (Char) -> Int = ::transformCharToActiveSegments
 ) {
     val density = LocalDensity.current.density
@@ -36,7 +64,11 @@ fun Rect7SegmentDisplay(
         x = paddingValues.calculateRightPadding(layoutDirection).value * density,
         y = paddingValues.calculateBottomPadding().value * density
     )
-    SingleLineSegmentedDisplay(modifier = modifier, text = text, shearPct = shearPct) { _, char, origin, charWidth, charHeight ->
+    SingleLineSegmentedDisplay(
+        modifier = modifier,
+        text = text,
+        shearPct = shearPct
+    ) { _, char, origin, charWidth, charHeight ->
         drawRect7SegmentChar(
             activatedSegments = charToActivatedSegments(char),
             origin = origin,
@@ -49,11 +81,54 @@ fun Rect7SegmentDisplay(
             thicknessMultiplier = thicknessMultiplier,
             activatedColor = activatedColor,
             deactivatedColor = deactivatedColor,
-            debuggingEnabled = false
+            debuggingEnabled = debuggingEnabled
         )
     }
 }
 
+/**
+ * Function responsible for drawing a 7-segment character on the canvas. This
+ * function is intended to be called called within the `renderCharOnCanvas`
+ * function that is an argument passed to [SingleLineSegmentedDisplay]. The
+ * segments drawn by this this function are only rectangular.
+ *
+ * > *Note*:
+ * > The thickness of the segments is related to the height of the character.
+ * > If the `thicknessMultiplier` is `1F`, then the thickness will be roughly
+ * > 12% of the drawable height (the height of the character minus the top and
+ * > bottom padding)
+ *
+ * > *Note*:
+ * > The gap size is also related to the height of the character via being
+ * > related to the thickness. If `gapSizeMultiplier` is `1F`, then the gap
+ * > size will be 10% of the thickness.
+ *
+ * @param origin the [Offset] to apply to each point
+ * @param activatedSegments an integer describing the segments that should be
+ * activated.
+ * @param width the width of the character
+ * @param height the height of the character
+ * @param topLeftPadding the padding to apply to the top and left sides of the
+ * character
+ * @param bottomRightPadding the padding to apply to the right and bottom sides
+ * of the character
+ * @param topAreaPercentage the percentage of the height of the character that
+ * should be taken by the top part of the character
+ * @param thicknessMultiplier a multiplier to apply to the thickness of the
+ * segments
+ * @param gapSizeMultiplier a multiplier to apply to the size of the gaps
+ * between segments
+ * @param activatedColor the [Color] to use for activated segments
+ * @param deactivatedColor the [Color] to use for deactivated segments
+ * @param debuggingEnabled whether or not to draw debugging information
+ *
+ * @see symmetricEvenAngledSegmentEnds for a function that returns
+ * [AngledSegmentEnds.EVEN] in all cases
+ * @see createSymmetricAngled7SegmentEndsFun for a function that returns
+ * a function that styles the segments symmetrically
+ * @see createAsymmetricAngled7SegmentEndsFun for a function that returns
+ * a function that styles the segments asymmetrically
+ */
 fun DrawScope.drawRect7SegmentChar(
     origin: Offset,
     activatedSegments: Int,
