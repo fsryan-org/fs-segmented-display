@@ -1,4 +1,4 @@
-#Module fs-segmented-display
+#Module segmented-display
 
 This is a Compose Multiplatform library that targets Android, desktop, iOS, and WASM JS.
 

@@ -1,9 +1,4 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.dokka.DokkaConfiguration.Visibility
 import org.jetbrains.dokka.gradle.DokkaTask
-//import org.jetbrains.dokka.base.DokkaBase
-//import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.Platform
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -14,6 +9,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
+    `maven-publish`
 }
 
 kotlin {
@@ -23,8 +19,10 @@ kotlin {
         browser()
         binaries.library()
     }
-    
+
     androidTarget {
+        publishLibraryVariants("release")
+
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -81,8 +79,6 @@ android {
 }
 
 tasks.withType<DokkaTask> {
-    moduleName.set("fs-segmented-display")
-
     val dokkaBaseConfiguration = """
     {
       "customAssets": ["${rootProject.file("docs/images/readme_headline.png")}"],
@@ -96,5 +92,56 @@ tasks.withType<DokkaTask> {
     dokkaSourceSets.configureEach {
         reportUndocumented.set(true)
         includes.from("MODULE.md")
+    }
+}
+
+// A function that will configure the maven publishing for a publiscation
+fun MavenPublication.configureMultiplatformPublishing(project: Project) {
+    val publicationName = name
+    with(pom) {
+        description.set("$publicationName target of the Compose Multiplatform FS Ryan library for rendering segmented displays")
+        inceptionYear.set("2024")
+        url.set("https://github.com/fsryan-org/fs-segmented-display")
+
+        issueManagement {
+            url.set("https://github.com/fsryan-org/fs-segmented-display/issues")
+            system.set("GitHub Issues")
+        }
+
+        licenses {
+            license {
+                name.set("The Apache Software License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("ryan")
+                name.set("Ryan Scott")
+                email.set("ryan@fsryan.com")
+                organization.set("FS Ryan")
+                organizationUrl.set("https://www.fsryan.com")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/fsryan-org/fs-segmented-display.git")
+            developerConnection.set("scm:git:git@github.com:fsryan-org/fs-segmented-display.git")
+        }
+    }
+
+//    if (name != "androidRelease") {
+//        artifact(project.tasks.withType<Jar>().first { it.name == "dokkaHtmlJar" })
+//    }
+}
+
+publishing {
+    publications.withType(MavenPublication::class.java) {
+        configureMultiplatformPublishing(project)
+    }
+    publications.whenObjectAdded {
+        (this as? MavenPublication)?.configureMultiplatformPublishing(project)
     }
 }

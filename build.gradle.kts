@@ -7,3 +7,8 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
 }
+
+allprojects {
+    version = "0.0.3"
+    group = "com.fsryan.ui"
+}
