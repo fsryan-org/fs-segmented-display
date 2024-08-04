@@ -78,14 +78,21 @@ android {
     }
 }
 
+tasks.register<Jar>("dokkaHtmlJar") {
+    dependsOn(tasks.dokkaHtml)
+    from(tasks.dokkaHtml.flatMap { it.outputDirectory })
+    archiveClassifier.set("javadoc")
+}
+
 tasks.withType<DokkaTask> {
-    val dokkaBaseConfiguration = """
-    {
-      "customAssets": ["${rootProject.file("docs/images/readme_headline.png")}"],
-      "customStyleSheets": [],
-      "footerMessage": "(c) 2024 FS Ryan Software"
+    val dokkaBaseConfiguration = buildString {
+        append("{\"customAssets\": [\"")
+        append(rootProject.file("docs/images/readme_headline.png"))
+        append("\"],")
+        append("\"customStyleSheets\": [],")
+        append("\"footerMessage\": \"(c) 2024 FS Ryan Software\"")
+        append("}")
     }
-    """
     pluginsMapConfiguration.set(
         mapOf("org.jetbrains.dokka.base.DokkaBase" to dokkaBaseConfiguration)
     )
@@ -95,7 +102,7 @@ tasks.withType<DokkaTask> {
     }
 }
 
-// A function that will configure the maven publishing for a publiscation
+// A function that will configure the maven publishing for a publication
 fun MavenPublication.configureMultiplatformPublishing(project: Project) {
     val publicationName = name
     with(pom) {
@@ -132,9 +139,9 @@ fun MavenPublication.configureMultiplatformPublishing(project: Project) {
         }
     }
 
-//    if (name != "androidRelease") {
-//        artifact(project.tasks.withType<Jar>().first { it.name == "dokkaHtmlJar" })
-//    }
+    if (name != "androidRelease") {
+        artifact(project.tasks.withType<Jar>().first { it.name == "dokkaHtmlJar" })
+    }
 }
 
 publishing {
