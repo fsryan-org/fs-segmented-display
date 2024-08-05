@@ -1,7 +1,9 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import java.util.concurrent.CopyOnWriteArraySet
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,6 +13,7 @@ plugins {
     alias(libs.plugins.dokka)
     `maven-publish`
     signing
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
 kotlin {
@@ -103,43 +106,43 @@ tasks.withType<DokkaTask> {
     }
 }
 
-// A function that will configure the maven publishing for a publication
-fun MavenPublication.configureMultiplatformPublishing(project: Project) {
-    val publicationName = name
-    with(pom) {
-        description.set("$publicationName target of the Compose Multiplatform FS Ryan library for rendering segmented displays")
-        inceptionYear.set("2024")
-        url.set("https://github.com/fsryan-org/fs-segmented-display")
+fun MavenPom.configure(publicationName: String) {
+    description.set("$publicationName target of the Compose Multiplatform FS Ryan library for rendering segmented displays")
+    inceptionYear.set("2024")
+    url.set("https://github.com/fsryan-org/fs-segmented-display")
 
-        issueManagement {
-            url.set("https://github.com/fsryan-org/fs-segmented-display/issues")
-            system.set("GitHub Issues")
-        }
+    issueManagement {
+        url.set("https://github.com/fsryan-org/fs-segmented-display/issues")
+        system.set("GitHub Issues")
+    }
 
-        licenses {
-            license {
-                name.set("The Apache Software License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("repo")
-            }
-        }
-
-        developers {
-            developer {
-                id.set("ryan")
-                name.set("Ryan Scott")
-                email.set("ryan@fsryan.com")
-                organization.set("FS Ryan")
-                organizationUrl.set("https://www.fsryan.com")
-            }
-        }
-
-        scm {
-            url.set("https://github.com/fsryan-org/fs-segmented-display.git")
-            developerConnection.set("scm:git:git@github.com:fsryan-org/fs-segmented-display.git")
+    licenses {
+        license {
+            name.set("The Apache Software License, Version 2.0")
+            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            distribution.set("repo")
         }
     }
 
+    developers {
+        developer {
+            id.set("ryan")
+            name.set("Ryan Scott")
+            email.set("ryan@fsryan.com")
+            organization.set("FS Ryan")
+            organizationUrl.set("https://www.fsryan.com")
+        }
+    }
+
+    scm {
+        url.set("https://github.com/fsryan-org/fs-segmented-display.git")
+        developerConnection.set("scm:git:git@github.com:fsryan-org/fs-segmented-display.git")
+    }
+}
+
+// A function that will configure the maven publishing for a publication
+fun MavenPublication.configureMultiplatformPublishing(project: Project) {
+    pom.configure(name)
     if (name != "androidRelease") {
         artifact(project.tasks.withType<Jar>().first { it.name == "dokkaHtmlJar" })
     }
@@ -157,8 +160,8 @@ publishing {
         (this as? MavenPublication)?.configureMultiplatformPublishing(project)
         println("ensuring publication signed: ${this.name}")
         if (project.canSignArtifacts()) {
-        project.signing.sign(this)
-            }
+            project.signing.sign(this)
+        }
     }
 }
 
@@ -176,6 +179,25 @@ signing {
         if (!project.hasProperty("signing.secretKeyRingFile")) {
             println("\tMissing signing.secretKeyRingFile")
         }
+    }
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = project.group.toString(),
+        artifactId = project.name,
+        version = project.version.toString()
+    )
+
+    val publicationName = name
+    pom {
+        configure(publicationName)
+    }
+    @Suppress("UnstableApiUsage")
+    configureBasedOnAppliedPlugins(javadocJar = false)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    if (project.canSignArtifacts()) {
+        signAllPublications()
     }
 }
 
