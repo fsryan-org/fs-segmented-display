@@ -68,6 +68,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(project(":segmented-display"))
+//            implementation("com.fsryan.ui:segmented-display:0.0.3")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
