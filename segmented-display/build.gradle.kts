@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     `maven-publish`
+    signing
 }
 
 kotlin {
@@ -144,11 +145,43 @@ fun MavenPublication.configureMultiplatformPublishing(project: Project) {
     }
 }
 
+fun Project.canSignArtifacts(): Boolean {
+    return hasProperty("signing.keyId") && hasProperty("signing.password") && hasProperty("signing.secretKeyRingFile")
+}
+
 publishing {
     publications.withType(MavenPublication::class.java) {
         configureMultiplatformPublishing(project)
     }
     publications.whenObjectAdded {
         (this as? MavenPublication)?.configureMultiplatformPublishing(project)
+        println("ensuring publication signed: ${this.name}")
+        if (project.canSignArtifacts()) {
+        project.signing.sign(this)
+            }
     }
+}
+
+signing {
+    if (project.canSignArtifacts()) {
+        sign(publishing.publications)
+    } else {
+        println("Cannot sign artifacts: missing signing information")
+        if (!project.hasProperty("signing.keyId")) {
+            println("\tMissing signing.keyId")
+        }
+        if (!project.hasProperty("signing.password")) {
+            println("\tMissing signing.password")
+        }
+        if (!project.hasProperty("signing.secretKeyRingFile")) {
+            println("\tMissing signing.secretKeyRingFile")
+        }
+    }
+}
+
+// Workaround found here: https://slack-chats.kotlinlang.org/t/13149393/i-m-getting-the-following-two-errors-when-trying-to-publish-
+// Further information found here: https://youtrack.jetbrains.com/issue/KT-46466
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    val signingTasks = tasks.withType<Sign>()
+    mustRunAfter(signingTasks)
 }
